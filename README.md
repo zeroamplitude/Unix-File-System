@@ -1,11 +1,14 @@
-Peter - get_size()
-        get_type()
+Peter - sfs_create()
+        sts_delete()
 
-Milan - open()
-		close()
+Milan - sfs_open()
+		sfs_close()
 
-nick - 
+nick - super_block.c
+		I_node.c
 
 
 
-arun - 
+arun - sfs_read()
+       sfs_write()
+       
