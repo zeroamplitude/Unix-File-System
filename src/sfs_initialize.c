@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cpio.h>
+#include <time.h>
 #include "sfs_fs.h"
 
 
@@ -60,7 +61,27 @@ main(int argc, char **argv)
      */
 
     time(&tm);
-    memset((void *)&inode, 0, sizeof(struct sfs_inode))
+    memset((void *)&inode, 0, sizeof(struct sfs_inode));
+    inode.mode = S_IFDIR | 0755;
+    inode.num_links = 2;        // "." and ".."
+    inode.ctime = tm;
+    inode.atime = tm;
+    inode.mtime = tm;
+    inode.uid   = 0;
+    inode.gid   = 0;
+    inode.size  = BLOCK_SIZE;
+    inode.blocks = 1;
+    inode.addr[0] = FIRST_DATA_BLOCK;
+
+    lseek(devfd, INODE_BLOCK * BLOCK_SIZE + 1024, SEEK_SET);
+    write(devfd, (char *)&inode, sizeof(struct superblock));
+
+    /*
+     * Create dir entries for root
+     */
+
+    lseek(devfd, FIRST_DATA_BLOCK *BLOCK_SIZE, SEEK_SET);
+
 
 
 

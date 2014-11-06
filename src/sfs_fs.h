@@ -2,7 +2,7 @@
 
 #define FILE_NAME_LENGTH     7
 #define BLOCK_SIZE          512
-#define FIRST_DATA_BLOCK
+#define FIRST_DATA_BLOCK    50
 #define DIRECT_BLOCKS 16
 #define MAX_FILES
 #define MAX_BLOCKS
@@ -21,13 +21,15 @@ struct sfs_superblock {
 
 struct sfs_inode {
     unsigned int32      mode;                       // Specifies the type of file
-    unsigned int32      num_links;                  // Count of the number of hard links to file
+    unsigned uint32      num_links;                  // Count of the number of hard links to file
     unsigned int32      ctime;                      // Records the creation date
     unsigned int32      atime;                      // Records the last access time
     unsigned int32      mtime;                      // Records the last time the file was modified
+    unsigned int32      uid;                        // Process ID
+    unsigned int32      gid;                        // Group ID
     unsigned int32      size;                       // The size of the file in bytes
     unsigned int32      blocks;                     // The number of blocks of a file
-    unsigned int32      address[DIRECT_BLOCKS];      //  Holds the address of the blocks on disk
+    unsigned int32      addr[DIRECT_BLOCKS];      //  Holds the address of the blocks on disk
 };
 
 /*
