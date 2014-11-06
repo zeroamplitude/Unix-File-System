@@ -19,18 +19,32 @@ struct sfs_superblock {
     unsigned int32      blocks[MAX_BLOCKS];
 };
 
-struct sfs_inode {
-    unsigned int32      mode;                       // Specifies the type of file
-    unsigned uint32      num_links;                  // Count of the number of hard links to file
-    unsigned int32      ctime;                      // Records the creation date
-    unsigned int32      atime;                      // Records the last access time
-    unsigned int32      mtime;                      // Records the last time the file was modified
-    unsigned int32      uid;                        // Process ID
-    unsigned int32      gid;                        // Group ID
-    unsigned int32      size;                       // The size of the file in bytes
-    unsigned int32      blocks;                     // The number of blocks of a file
-    unsigned int32      addr[DIRECT_BLOCKS];      //  Holds the address of the blocks on disk
-};
+struct inode {
+    unsigned long i_ino;    /* Inode number */
+    atomic_t i_count;       /* Reference count */
+    kdev_t i_dev;       /* Filesystem device */
+    umode_t i_mode; /* Type/access rights */
+    nlink_t i_nlink; /* # of hard links */
+    uid_t i_uid; /* User ID */
+    gid_t i_gid; /* Group ID */
+    kdev_t i_rdev; /* For device files */
+    loff_t i_size; /* File size */
+    time_t i_atime; /* Access time */
+    time_t i_mtime; /* Modification time */
+    time_t i_ctime; /* Creation time */
+    unsigned long i_blksize; /* Fs block size */
+    unsigned long i_blocks; /* # of blocks in file */
+    struct inode_operations *i_op; /* Inode operations */
+    struct super_block *i_sb; /* Superblock/mount */
+    struct vm_area_struct *i_mmap; /* Mapped file areas */
+    unsigned char i_update; /* Is inode current? */
+    union { /* One per fs type! */
+        struct minix_inode_info minix_i;
+        struct ext2_inode_info ext2_i;
+        ...
+        void *generic_ip;
+    } u;
+}
 
 /*
  * Allocation flags
