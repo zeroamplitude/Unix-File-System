@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "sfs_ds.h"
-dsfsafxdfdsf
+
 
 void sfs_create(int sfs_handle, char *fn)
 {
