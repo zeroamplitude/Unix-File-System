@@ -3,7 +3,7 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) {
-	    blockio Disk1 = new blockio();
+	    BlockIO Disk1 = new BlockIO();
         String testFile = "Test";
         byte[] dataTest;
         dataTest = stringToByteASCII(testFile);
