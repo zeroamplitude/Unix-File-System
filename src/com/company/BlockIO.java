@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * The BlockIO class is designed to simulate
- * block-oriented access to a disk.
+ * BlockIO:
+ *      This class is designed to simulate
+ *      block-oriented access to a disk.
  *
  * @author Nicholas De Souza.
  */
@@ -15,9 +16,9 @@ public class BlockIO {
     /* File for storing simulated disk's data */
     private static final String DISKFILE = "simdisk.data";
     /* Size of blocks on simulated disk */
-    private static final int BLKSIZE = 128;
+    public static final int BLKSIZE = 128;
     /* Number of blocks on simulated disk */
-    private static final int NUMBLKS = 512;
+    public static final int NUMBLKS = 512;
 
     /* File descriptor of disk data file when open.
      * A null value indicated file is not opened. */
