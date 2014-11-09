@@ -4,8 +4,7 @@ package com.jfsfunctions;
  * @author <<Fill in your name here>>
  */
 public abstract class JfsOpen implements JfsInterface {
-    @Override
-    public int jfsOpen(char[] pathname) {
+    public int jfsOpen(String pathname) {
         return 0;
     }
 }

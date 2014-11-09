@@ -1,6 +1,6 @@
 package com.jfstest;
 
-import com.jfsfunctions.JfsInterface;
+import com.jfsfunctions.*;
 import com.jfsinternal.*;
 import java.util.Scanner;
 import javax.validation.constraints.Size;
@@ -45,7 +45,7 @@ public class JfsTest {
 
     public static int p1,p2,p3;
 
-    JfsInterface jfsInterface = new
+    public static JfsInterface jfs;
 
 
     public static void main(String[] args) {
@@ -73,7 +73,7 @@ public class JfsTest {
                 case 'o': /* Open a file */
                     System.out.println("Enter the full path of the file to open: ");
                     dataBuffer = in.nextLine();
-                    retval = jfsOpen(dataBuffer);
+                    retval = jfs.jfsOpen(dataBuffer);
                     if (retval >= 0) {
                         System.out.println("Open succeeded. File " +
                                 "Descriptor number is " + retval);
@@ -90,15 +90,13 @@ public class JfsTest {
                     p2 = in.nextInt();
                     System.out.println("Enter number of bytes to read: ");
                     p3 = in.nextInt();
-                    retval = jfsRead(p1, p2, p3, ioBuffer);
+                    retval = jfs.jfsRead(p1, p2, p3, ioBuffer);
                     if (retval > 0) {
                         System.out.println("Read successful.");
                         System.out.println("The following data was " +
                                 "read (only printable ASCII will " +
                                 "display)");
-                        for(i=0; i < p3; i++) {
-                            System.out.print(io_buffer[i]);
-                        }
+                        System.out.print(ioBuffer);
                         System.out.println();
                     } else {
                         System.out.println("Error. The return value " +
@@ -119,7 +117,7 @@ public class JfsTest {
                     System.out.println("Enter " + p3 + " characters to" +
                             " be written: ");
                     ioBuffer = in.nextLine();
-                    retval = jfsWrite(p1, p2, p3, ioBuffer);
+                    retval = jfs.jfsWrite(p1, p2, p3, ioBuffer);
                     if (retval > 0) {
                         System.out.println("Write successful.");
                         System.out.println("Wrote" + ioBuffer +
@@ -133,11 +131,11 @@ public class JfsTest {
                 case 'R': /* Read from a directory */
                     System.out.println("Enter file descriptor number: ");
                     p1 = in.nextInt();
-                    retval = jfsReadDir(p1, io_buffer);
+                    retval = jfs.jfsReadDir(p1, ioBuffer);
                     if (retval > 0) {
                         System.out.println("jfsReadDir successful.");
                         System.out.println("Directory entry is: " +
-                                io_buffer);
+                                ioBuffer);
                     }
                     else if (retval == 0) {
                         System.out.println("jfsReadDir successful.");
@@ -152,7 +150,7 @@ public class JfsTest {
                 case 'c': /* Close a file */
                     System.out.println("Enter file descriptor number: ");
                     p1 = in.nextInt();
-                    retval = jfsClose(p1);
+                    retval = jfs.jfsClose(p1);
                     if (retval > 0) {
                         System.out.println("jfsClose successful.");
                     }
@@ -168,7 +166,7 @@ public class JfsTest {
                     System.out.println("Enter 0 for regular file, 1 " +
                             "for directory: ");
                     p1 = in.nextInt();
-                    retval = jfsCreate(dataBuffer, p1);
+                    retval = jfs.jfsCreate(dataBuffer, p1);
                     if (retval > 0) {
                         System.out.println("jfsCreate successful.");
                     }
@@ -182,7 +180,7 @@ public class JfsTest {
                     System.out.println("Enter full path name of file" +
                             " to delete: ");
                     dataBuffer = in.nextLine();
-                    retval = jfsDelete(dataBuffer);
+                    retval = jfs.jfsDelete(dataBuffer);
                     if (retval > 0) {
                         System.out.println("jfsDelete successful.");
                     }
@@ -195,7 +193,7 @@ public class JfsTest {
                 case 's': /* Get the size of a file */
                     System.out.println("Enter full path name of file: ");
                     dataBuffer = in.nextLine();
-                    retval = jfsGetsize(dataBuffer);
+                    retval = jfs.jfsGetSize(dataBuffer);
                     if (retval >= 0) {
                         System.out.println("jfsGetsize successful.");
                         System.out.println("size = " + retval);
@@ -209,7 +207,7 @@ public class JfsTest {
                 case 't': /* Get the type of a file */
                     System.out.println("Enter full path name of file: ");
                     dataBuffer = in.nextLine();
-                    retval = jfsGettype(dataBuffer);
+                    retval = jfs.jfsGetType(dataBuffer);
                     if (retval >= 0) {
                         System.out.println("jfsGettype successful.");
                         if (retval == 0) {
@@ -231,7 +229,7 @@ public class JfsTest {
                     System.out.println("Enter 1 to erase disk while " +
                             "initializing, 0 otherwise: ");
                     p1 = in.nextInt();
-                    retval = jfsInitialize(p1);
+                    retval = jfs.jfsInitialize(p1);
                     if (retval > 0) {
                         System.out.println("jfsInitialize successful.");
                     }

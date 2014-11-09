@@ -8,24 +8,23 @@ package com.jfsfunctions;
  */
 public interface JfsInterface {
 
-    int jfsOpen(char[] pathname);
+    int jfsOpen(String pathname);
 
-    int jfsRead(int fd, int start, int length, char[] mem_pointer);
+    int jfsRead(int fd, int start, int length, String mem_pointer);
 
-    int jfsWrite(int fd, int start, int length, char[] mem_pointer);
+    int jfsWrite(int fd, int start, int length, String mem_pointer);
 
-    int jfsReadDir(int fd, char[] mem_pointer);
+    int jfsReadDir(int fd, String mem_pointer);
 
     int jfsClose(int fd);
 
-    int jfsDelete(char[] pathname);
+    int jfsDelete(String pathname);
 
-    int jfsCreate(char[] pathname, int type);
+    int jfsCreate(String pathname, int type);
 
-    int jfsGetSize(char[] pathname);
+    int jfsGetSize(String pathname);
 
-    int jfsGetType(char[] pathname);
+    int jfsGetType(String pathname);
 
-    int jfsinitialize(int erase);
-
+    int jfsInitialize(int p1);
 }

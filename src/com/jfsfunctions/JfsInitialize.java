@@ -6,8 +6,12 @@ package com.jfsfunctions;
  */
 public abstract class JfsInitialize implements JfsInterface {
 
+    /**
+     * @param erase
+     * @return
+     */
     @Override
-    public int jfsinitialize(int erase) {
+    public int jfsInitialize(int erase) {
         return 0;
     }
 }

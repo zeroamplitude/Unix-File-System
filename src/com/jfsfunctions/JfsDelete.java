@@ -4,8 +4,7 @@ package com.jfsfunctions;
  * @author <<Fill in your name here>>
  */
 public abstract class JfsDelete implements JfsInterface {
-    @Override
-    public int jfsDelete(char[] pathname) {
+    public int jfsDelete(String pathname) {
         return 0;
     }
 }
