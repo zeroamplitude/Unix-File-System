@@ -1,7 +1,6 @@
 package com.jfstest;
 
 import com.jfsfunctions.*;
-import com.jfsinternal.*;
 import java.util.Scanner;
 import javax.validation.constraints.Size;
 

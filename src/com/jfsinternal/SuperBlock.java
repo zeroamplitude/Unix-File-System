@@ -11,12 +11,12 @@ public class SuperBlock {
 
     protected static final int NUMFILES = 64;
 
-    public int numBlocks;
-    public int blockSize;
-    public int freeBlockCount;
-    public FreeBlock[] freeBlocks;
-    public int freeInodeCount;
-    public INode[] iNodes;
+    private int numBlocks;
+    private int blockSize;
+    private int freeBlockCount;
+    private FreeBlock[] freeBlocks;
+    private int freeInodeCount;
+    private INode[] iNodes;
 
 
     public SuperBlock(int diskSize) {
