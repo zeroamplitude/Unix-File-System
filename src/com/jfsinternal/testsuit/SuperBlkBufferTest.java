@@ -1,7 +1,7 @@
 package com.jfsinternal.testsuit;
 
 import com.jfsinternal.DiskBitmap;
-import com.jfsinternal.SuperBlkBuffer;
+import com.jfsmemory.SuperBlkBuffer;
 
 /**
  * @author Nicholas De Souza

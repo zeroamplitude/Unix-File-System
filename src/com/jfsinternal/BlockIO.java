@@ -16,7 +16,7 @@ public class BlockIO {
     /* File for storing simulated disk's data */
     private static final String DISKFILE = "simdisk.data";
     /* Size of blocks on simulated disk */
-    protected static final int BLKSIZE = 128;
+    public static final int BLKSIZE = 128;
     /* Number of blocks on simulated disk */
     protected static final int NUMBLKS = 512;
 

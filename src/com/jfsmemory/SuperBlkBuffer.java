@@ -1,4 +1,7 @@
-package com.jfsinternal;
+package com.jfsmemory;
+
+import com.jfsinternal.BlockIO;
+import com.jfsinternal.DiskBitmap;
 
 /**
  * Created by nicholas on 09/11/14.

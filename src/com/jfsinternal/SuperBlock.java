@@ -9,11 +9,14 @@ package com.jfsinternal;
  */
 public class SuperBlock {
 
+    public static final int NUMFILES = 64;
+
     private int numBlocks;
     private int blockSize;
     private int freeBlocks;
 
     int putSuperBlock() {
+
         return 0;
     }
 
