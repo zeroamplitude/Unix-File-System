@@ -8,21 +8,34 @@ package com.company;
  * @author Nicholas De Souza
  */
 public class SuperBlock {
-    private final int NUMFILES = 64;
+
+    protected static final int NUMFILES = 64;
 
     public int numBlocks;
     public int blockSize;
     public int freeBlockCount;
-    public Block freeBlocks;
+    public FreeBlock[] freeBlocks;
     public int freeInodeCount;
-    public INode iNode;
+    public INode[] iNodes;
 
 
     public SuperBlock(int diskSize) {
-        byte[] superBlock = new byte[BlockIO.BLKSIZE];
-        blockSize
+        numBlocks = BlockIO.NUMBLKS;
+        blockSize = BlockIO.BLKSIZE;
+        freeBlockCount = CountFreeBlocks();
+        freeBlocks = new FreeBlock[freeBlockCount];
+        freeInodeCount = CountFreeInode();
+        iNodes = new INode[NUMFILES];
+    }
 
+    public int CountFreeBlocks() {
+        int count = 1;
+        return count;
+    }
 
+    public int CountFreeInode() {
+        int count = 1;
+        return count;
     }
 
 }
