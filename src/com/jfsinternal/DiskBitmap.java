@@ -1,29 +1,32 @@
 package com.jfsinternal;
 
+
 /**
  * Created by nicholas on 08/11/14.
  */
 public class DiskBitmap {
 
-    public Byte[] bitmap;
+    public int[] bitmap;
 
     public DiskBitmap(){
-        bitmap = new Byte[BlockIO.NUMBLKS];
+        bitmap = new int[BlockIO.NUMBLKS];
     }
 
-    private int updateBitmap() {
-            bitmap[0] = 0;
-            bitmap[1] = 0;
-            bitmap[2] = 0;
-            bitmap[3] = 1;
+    public int updateBitmap() {
+            bitmap[0] = 1;
+            bitmap[1] = 1;
+            bitmap[2] = 1;
+            bitmap[3] = 0;
         return 0;
     }
 
-    public Byte encodeBitmap(int i) {
-        int encoded =   (bitmap[ i ]<<24)&0xff000000|
-                        (bitmap[i+1]<<16)&0x00ff0000|
-                        (bitmap[i+2]<< 8)&0x0000ff00|
-                        (bitmap[i+3]<< 0)&0x000000ff;
-        return (byte)encoded;
+    public int encodeBitmap(int i) {
+        int encoded = 0;
+        int j = 3;
+        for (int dig = i ; dig < 4; dig++) {
+            encoded = encoded + (int) (bitmap[dig] * Math.pow(2, j));
+            j--;
+        }
+        return encoded;
     }
 }
