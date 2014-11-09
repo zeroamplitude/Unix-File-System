@@ -6,10 +6,10 @@ package com.jfsinternal;
  */
 public class DiskBitmap {
 
-    public int[] bitmap;
+    public byte[] bitmap;
 
     public DiskBitmap(){
-        bitmap = new int[BlockIO.NUMBLKS];
+        bitmap = new byte[BlockIO.NUMBLKS];
     }
 
     public int updateBitmap() {

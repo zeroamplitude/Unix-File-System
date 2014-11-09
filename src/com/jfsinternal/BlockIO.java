@@ -1,5 +1,7 @@
 package com.jfsinternal;
 
+import com.jfsmemory.SuperBlkBuffer;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -131,10 +133,10 @@ public class BlockIO {
      * @return 0 if successful, -1 otherwise
      */
     public int putBlock(int blocknum, byte[] buffer){
-        if (buffer.length != BLKSIZE){
+        /*if (buffer.length != BLKSIZE){
             throw new RuntimeException("putBlock: bad buffer size "
                     + buffer.length);
-        }
+        }*/
         if (diskfd == null){
             if (init_disk() != 0) return -1;
         }
@@ -147,4 +149,6 @@ public class BlockIO {
         }
         return 0;
     }
+
+
 }

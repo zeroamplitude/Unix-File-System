@@ -1,20 +1,47 @@
 package com.jfsinternal.testsuit;
 
+import com.jfsinternal.Block;
 import com.jfsinternal.BlockIO;
+import com.jfsinternal.DiskBitmap;
+import com.jfsinternal.SuperBlock;
 
 public class BlockIOTest {
 
     public static void main(String[] args) {
-	    BlockIO Disk1 = new BlockIO();
+	    BlockIO disk = new BlockIO();
+        SuperBlock sb = new SuperBlock();
+        DiskBitmap bitmap = new DiskBitmap();
+        //SuperBlkBuffer sbb = new SuperBlkBuffer();
+
+        bitmap.updateBitmap();
+        sb.putSuperBlock(bitmap);
+        /*
         String testFile = "Test";
         byte[] dataTest;
         dataTest = stringToByteASCII(testFile);
-        Disk1.putBlock(0, dataTest);
+        Disk1.putBlock(0, dataTest);*/
+
+
+        byte[] testbuf = new byte[BlockIO.BLKSIZE];
+        for (int i = 0; i < BlockIO.BLKSIZE; i++) {
+            testbuf[i] = 1;
+        }
+
+        Block block = new Block();
+
+        disk.putBlock(0, sb.buffer.getBuffer());
+        disk.putBlock(1, testbuf);
+        disk.putBlock(2, block.getBlock());
+
 
         byte[] dataTest2 = new byte[128];
-        Disk1.getBlock(0, dataTest2);
-        String test2 = new String(dataTest2);
-        System.out.println(test2);
+        disk.getBlock(0, dataTest2);
+        //String test2 = new String(dataTest2);
+        System.out.println(dataTest2);
+
+
+
+
 
     }
 
