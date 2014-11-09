@@ -12,8 +12,8 @@ public class DiskBitmapTest {
 
         bm.updateBitmap();
 
-        int test = bm.encodeBitmap(0);
+        //int test = bm.encodeBitmap(0);
 
-        System.out.println(test);
+        //System.out.println(test);
     }
 }

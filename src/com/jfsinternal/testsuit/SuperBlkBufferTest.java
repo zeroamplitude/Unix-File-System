@@ -1,7 +1,8 @@
 package com.jfsinternal.testsuit;
 
 import com.jfsinternal.DiskBitmap;
-import com.jfsinternal.SuperBlkBuffer;
+import com.jfsinternal.SuperBlock;
+import com.jfsmemory.SuperBlkBuffer;
 
 /**
  * @author Nicholas De Souza
@@ -9,12 +10,17 @@ import com.jfsinternal.SuperBlkBuffer;
 public class SuperBlkBufferTest {
 
     public static void main(String[] args) {
+        SuperBlock sb = new SuperBlock();
         DiskBitmap bitmap = new DiskBitmap();
+        //SuperBlkBuffer sbb = new SuperBlkBuffer();
+
         bitmap.updateBitmap();
+        sb.putSuperBlock(bitmap);
 
-        SuperBlkBuffer sbb = new SuperBlkBuffer(bitmap);
 
-        int test = sbb.getBuffer(0);
+
+
+        int test = sb.buffer.getBuffer(0);
         System.out.println(test);
 
     }

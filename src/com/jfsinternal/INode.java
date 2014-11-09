@@ -19,7 +19,8 @@ public class INode {
     }
 
     int putINodeTable() {
-    return 0;
+
+        return 0;
     }
 
     int getFilePointer(int iNumber, int filePtr) {
