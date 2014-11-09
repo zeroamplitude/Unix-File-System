@@ -1,4 +1,4 @@
-package com.jfstest;
+package com.jfsinternal.testsuit;
 
 import com.jfsinternal.BlockIO;
 
