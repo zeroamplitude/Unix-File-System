@@ -49,6 +49,8 @@ public class JfsTest {
 
     public static void main(String[] args) {
         int i, retval;
+        i = 0;
+        retval=0;
 
         while(true) {
             System.out.println();

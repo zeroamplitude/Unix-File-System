@@ -6,39 +6,24 @@ package com.jfsinternal;
 public class INode {
 
     public final static int SIZE = 64;
-    int flags;
-    int owner;
+    String name;
+    int type; // 0 for file regular file , 1 for directory
     int fileSize;
-    public int[] pointer;
-
-    /**
-     * Constructor class
+    /* combined scheme file system
+    new[11] - first 12 blocks point to direct blocks (contain addresses that contain data of the file)
+    128 bytes * 12 = 1536 bytes of data accessed directly
      */
-    public INode() {
+    int[] directAccess = new int[11];
 
+    // give inode name/type/owner/ computer file size
+    void setName(String name) {
+        this.name = name;
+    }
+    void setType(int type) {
+        this.type = type;
     }
 
-    int putINodeTable() {
 
-        return 0;
-    }
-
-    int getFilePointer(int iNumber, int filePtr) {
-    return 0;
-    }
-
-    int allocBlk2File(int iNumber, int allocBlkNo) {
-    return 0;
-    }
-
-    int parsePathName(String path, int numComponents) {
-    return 0;
-    }
-
-    int parseDirEntry(int componentNo, int component, int iNumber) {
-
-    return 0;
-    }
 
 
 }
