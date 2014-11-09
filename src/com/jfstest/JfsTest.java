@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 /**
  * JfsTest:
  *      This a simple interactive test program for use with
- *      the file system inteface functions.
+ *      the file system interface functions.
  *      To use this program, import the package containing
  *      your java source code and BlockIO functions.
  *      The program will print out a list of available commands
