@@ -16,17 +16,21 @@ public class DiskBitmap {
             bitmap[0] = 1;
             bitmap[1] = 1;
             bitmap[2] = 1;
-            bitmap[3] = 0;
+            bitmap[3] = 1;
         return 0;
     }
 
     public int encodeBitmap(int i) {
         int encoded = 0;
         int j = 3;
-        for (int dig = i ; dig < 4; dig++) {
-            encoded = encoded + (int) (bitmap[dig] * Math.pow(2, j));
+        int i1;
+        for (i1 = i; i1 < 4; i1++) {
+            encoded = encoded + (int) (bitmap[i1] * Math.pow(2, j));
             j--;
         }
         return encoded;
     }
+
+
+
 }
