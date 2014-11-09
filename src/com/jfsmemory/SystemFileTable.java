@@ -18,20 +18,24 @@ public class SystemFileTable {
     public int bitmap[];
 
     private int index = 0;
+
     public SystemFileTable() {
 
     }
 
-    public int add(INode iNode, int inumber, int fd) {
-        if (bitmap[fd] != 0)
+    /*
+        public int add(INode iNode, int inumber, int fd) {
+            if (bitmap[fd] != 0)
 
-    }
+        }
+        */
     public int find_space() {
-        for (int i = 0; i < MAX_FILES; i++)
-            if (bitmap[i]==0)
+        for (int i = 0; i < MAX_FILES; i++) {
+            if (bitmap[i] == 0)
                 return index;
             else
                 return -1; // needs to be an error
+        }
+        return 0;
     }
-
 }
