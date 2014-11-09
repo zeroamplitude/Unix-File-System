@@ -1,10 +1,7 @@
 package com.jfsfunctions;
-
 import java.util.StringTokenizer;
 
 /**
- * @author Peter Little
- *
  * sfs_getsize(char *pathname): If the specified file is a regular file, this function should return the number of
  * bytes in the file. If it is a directory file, this function should return the number of directory entries in the file.
  */
@@ -12,6 +9,7 @@ public abstract class JfsGetSize implements JfsInterface {
 
 
     public int jfsGetSize(String pathname) {
+        int fileSize = 0;
 
         /*
          * parse the pathname to determine if it is a correct pathname
@@ -28,28 +26,28 @@ public abstract class JfsGetSize implements JfsInterface {
 
             if (token.length() > 5){
                 System.out.println("ERROR: INVALID PATHNAME");
-                return 0;
+                return -1;
             }else tokens[tokenCounter - 1] = token;
         }
 
         if (tokenCounter == 0){
             System.out.println("ERROR: INVALID PATHNAME");
-            return 0;
+            return -1;
         }
 
         String fileName = tokens[tokenCounter - 1];
         System.out.println(fileName);
 
+        int fileType = getInode(fileName).JfsGetType(pathname);
 
-        /*
-        int fileType = CurFile.JfsGetType(CurFile.path);
+
 
             if (fileType == 0){ //is a directory
-
+                fileSize = getInode(fileName).getdirectAccess().size();
         } else if (fileType == 1){ // is a file
-
+                fileSize = getInode(fileName).Size();
             }
-            */
-        return 0;
+
+        return fileSize;
     }
 }

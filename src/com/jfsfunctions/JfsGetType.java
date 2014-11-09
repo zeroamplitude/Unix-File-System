@@ -23,17 +23,20 @@ public abstract class JfsGetType implements JfsInterface {
 
             if (token.length() > 5){
                 System.out.println("ERROR: INVALID PATHNAME");
-                return 0;
+                return -1;
             }else tokens[tokenCounter - 1] = token;
         }
 
-        if (tokenCounter == 0){
+        if (tokenCounter == -1){
             System.out.println("ERROR: INVALID PATHNAME");
             return 0;
         }
 
         String fileName = tokens[tokenCounter - 1];
         System.out.println(fileName);
-        return 0;
+
+        int fileType = getInode(fileName).getType();
+
+        return fileType;
     }
 }
