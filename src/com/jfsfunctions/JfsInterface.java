@@ -2,7 +2,8 @@ package com.jfsfunctions;
 
 /**
  * jfsInterface:
- *      This is the interface for the JfsTest functions
+ *      This is the interface for the javaFileSystem
+ *      functions.
  *
  * @author Nicholas De Souza
  */

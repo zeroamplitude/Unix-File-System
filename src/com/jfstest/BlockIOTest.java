@@ -1,6 +1,8 @@
-package com.jfsinternal;
+package com.jfstest;
 
-public class Main {
+import com.jfsinternal.BlockIO;
+
+public class BlockIOTest {
 
     public static void main(String[] args) {
 	    BlockIO Disk1 = new BlockIO();
