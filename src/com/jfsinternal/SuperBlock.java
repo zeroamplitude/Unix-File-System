@@ -1,5 +1,7 @@
 package com.jfsinternal;
 
+import com.jfsmemory.SuperBlkBuffer;
+
 /**
  * SuperBlock:
  *      This class is designed to construct the
@@ -15,8 +17,22 @@ public class SuperBlock {
     private int blockSize;
     private int freeBlocks;
 
-    int putSuperBlock() {
+    public SuperBlkBuffer buffer = new SuperBlkBuffer();
 
+    public int putSuperBlock(DiskBitmap bitmap) {
+        int[] encoded = new int[BlockIO.BLKSIZE] ;
+        int i = 0;
+        while(i < BlockIO.NUMBLKS) {
+            int j = 3;
+            int sum = 0;
+            for (int z = i; z < 4; z++) {
+                sum += (int) (bitmap.getBit(z) * Math.pow(2, j));
+                j--;
+            }
+            encoded[i] = sum;
+            i = i + 4;
+        }
+        buffer.updateBuff(encoded)
         return 0;
     }
 

@@ -2,6 +2,7 @@ package com.jfsmemory;
 
 import com.jfsinternal.BlockIO;
 import com.jfsinternal.DiskBitmap;
+import com.jfsinternal.SuperBlock;
 
 /**
  * Created by nicholas on 09/11/14.
@@ -9,20 +10,19 @@ import com.jfsinternal.DiskBitmap;
 public class SuperBlkBuffer {
 
 
-    int[] superBlkBuf = new int[BlockIO.BLKSIZE];
+    int[] superBlkBuf;
 
-    public SuperBlkBuffer(DiskBitmap bitmap) {
-        //for (int i = 0; i < BlockIO.NUMBLKS; i = i + 4) {
-            superBlkBuf[0] = bitmap.encodeBitmap(0);
-        //}
+    public SuperBlkBuffer() {
+        superBlkBuf = new int[BlockIO.BLKSIZE];
     }
 
-    public int updateBuff() {
-
+    public int updateBuff(int[] buffer) {
+        superBlkBuf = buffer;
         return 0;
     }
 
     public int getBuffer(int i) {
+
         return superBlkBuf[i];
     }
 }
