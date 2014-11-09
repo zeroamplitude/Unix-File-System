@@ -8,5 +8,21 @@ package com.company;
  * @author Nicholas De Souza
  */
 public class SuperBlock {
-    byte[] superBlock = new byte[BlockIO]
+    private final int NUMFILES = 64;
+
+    public int numBlocks;
+    public int blockSize;
+    public int freeBlockCount;
+    public Block freeBlocks;
+    public int freeInodeCount;
+    public INode iNode;
+
+
+    public SuperBlock(int diskSize) {
+        byte[] superBlock = new byte[BlockIO.BLKSIZE];
+        blockSize
+
+
+    }
+
 }
