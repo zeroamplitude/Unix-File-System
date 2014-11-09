@@ -45,6 +45,8 @@ public class JfsTest {
 
     public static int p1,p2,p3;
 
+    JfsInterface jfsInterface = new
+
 
     public static void main(String[] args) {
         int i, retval;
