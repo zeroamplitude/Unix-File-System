@@ -16,12 +16,19 @@ public class SuperBlock {
 
     private int numBlocks;
     private int blockSize;
-    private int freeBlocks;
+    private int freeBlockCount;
+    IndirectBlock freeBlockList = new IndirectBlock();
+
+    public SuperBlock() {
+        numBlocks = BlockIO.NUMBLKS;
+        blockSize = BlockIO.BLKSIZE;
+        freeBlockList = getList();
+    }
 
 
 
     public int putSuperBlock(DiskBitmap bitmap) {
-        int[] encoded = new int[BlockIO.BLKSIZE] ;
+        byte[] encoded = new byte[BlockIO.BLKSIZE] ;
         int i = 0;
         int y = 0;
         while(i < BlockIO.NUMBLKS) {
@@ -31,7 +38,7 @@ public class SuperBlock {
                 sum += (int) (bitmap.getBit(z) * Math.pow(2, j));
                 j--;
             }
-            encoded[y] = sum;
+            encoded[y] = (byte)sum;
             i = i + 4;
             y++;
         }
@@ -51,4 +58,8 @@ public class SuperBlock {
         return 0;
     }
 
+//    public IndirectBlock getList() {
+//        freeBlockList.pointer[i] =
+//        return freeBlockList;
+//    }
 }

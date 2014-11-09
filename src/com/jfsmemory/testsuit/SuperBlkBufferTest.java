@@ -1,4 +1,4 @@
-package com.jfsinternal.testsuit;
+package com.jfsmemory.testsuit;
 
 import com.jfsinternal.DiskBitmap;
 import com.jfsinternal.SuperBlock;
@@ -20,8 +20,9 @@ public class SuperBlkBufferTest {
 
 
 
-        int test = sb.buffer.getBuffer(0);
-        System.out.println(test);
+        byte[] test = sb.buffer.getBuffer();
+        for (int i = 0; i < test.length; i++)
+            System.out.print(test[i] + " ");
 
     }
 
