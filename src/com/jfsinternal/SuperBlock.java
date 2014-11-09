@@ -9,33 +9,24 @@ package com.jfsinternal;
  */
 public class SuperBlock {
 
-    protected static final int NUMFILES = 64;
-
     private int numBlocks;
     private int blockSize;
-    private int freeBlockCount;
-    private FreeBlock[] freeBlocks;
-    private int freeInodeCount;
-    private INode[] iNodes;
+    private int freeBlocks;
 
-
-    public SuperBlock(int diskSize) {
-        numBlocks = BlockIO.NUMBLKS;
-        blockSize = BlockIO.BLKSIZE;
-        freeBlockCount = CountFreeBlocks();
-        freeBlocks = new FreeBlock[freeBlockCount];
-        freeInodeCount = CountFreeInode();
-        iNodes = new INode[NUMFILES];
+    int putSuperBlock() {
+        return 0;
     }
 
-    public int CountFreeBlocks() {
-        int count = 1;
-        return count;
+    int getSuperBlock() {
+        return 0;
     }
 
-    public int CountFreeInode() {
-        int count = 1;
-        return count;
+    int getEmptyBlock(int freeBlkNo) {
+        return 0;
+    }
+
+    int releaseBlock(int releaseBlkNo) {
+        return 0;
     }
 
 }

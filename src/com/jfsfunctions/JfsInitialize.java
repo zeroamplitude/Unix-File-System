@@ -12,6 +12,7 @@ public abstract class JfsInitialize implements JfsInterface {
      */
     @Override
     public int jfsInitialize(int erase) {
+
         return 0;
     }
 }
