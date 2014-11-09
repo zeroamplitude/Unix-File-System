@@ -1,4 +1,4 @@
-package com.company;
+package com.jfsinternal;
 
 import java.io.File;
 import java.io.FileDescriptor;

@@ -1,5 +1,7 @@
-package com.company;
+package com.jfstest;
 
+import com.jfsfunctions.JfsInterface;
+import com.jfsinternal.*;
 import java.util.Scanner;
 import javax.validation.constraints.Size;
 
@@ -26,7 +28,6 @@ import javax.validation.constraints.Size;
  * @author Nicholas De Souza
  */
 public class JfsTest {
-
 
     private static final int MAXIOLEN = 1024;
 

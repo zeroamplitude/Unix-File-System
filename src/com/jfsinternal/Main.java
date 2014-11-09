@@ -1,4 +1,4 @@
-package com.company;
+package com.jfsinternal;
 
 public class Main {
 
