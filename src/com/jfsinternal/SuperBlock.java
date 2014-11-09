@@ -12,16 +12,18 @@ import com.jfsmemory.SuperBlkBuffer;
 public class SuperBlock {
 
     public static final int NUMFILES = 64;
+    public SuperBlkBuffer buffer = new SuperBlkBuffer();
 
     private int numBlocks;
     private int blockSize;
     private int freeBlocks;
 
-    public SuperBlkBuffer buffer = new SuperBlkBuffer();
+
 
     public int putSuperBlock(DiskBitmap bitmap) {
         int[] encoded = new int[BlockIO.BLKSIZE] ;
         int i = 0;
+        int y = 0;
         while(i < BlockIO.NUMBLKS) {
             int j = 3;
             int sum = 0;
@@ -29,10 +31,11 @@ public class SuperBlock {
                 sum += (int) (bitmap.getBit(z) * Math.pow(2, j));
                 j--;
             }
-            encoded[i] = sum;
+            encoded[y] = sum;
             i = i + 4;
+            y++;
         }
-        buffer.updateBuff(encoded)
+        buffer.updateBuff(encoded);
         return 0;
     }
 

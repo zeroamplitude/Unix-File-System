@@ -22,7 +22,6 @@ public class SuperBlkBuffer {
     }
 
     public int getBuffer(int i) {
-
         return superBlkBuf[i];
     }
 }
