@@ -10,13 +10,13 @@ public class GlobalFunctionsTest {
 
     public static void main(String[] args){
         GlobalFunctions ad = new GlobalFunctions();
-        ErrorHandling errorName = new ErrorHandling();
+      //  ErrorHandling errorName = new ErrorHandling();
         String path = "/file1";
         String path1 = "/file2";
         String path2 = "/aaabbccc";
         String path3 = "aaa";
 
-       System.out.println(errorName.checkPathName(path));
+       //System.out.println(errorName.checkPathName(path));
        /* FILE NAME DIRECTORY
 
 

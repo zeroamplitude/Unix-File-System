@@ -17,25 +17,33 @@ public class SystemFileTable {
     public static final int MAX_FILES = 64;
     public int bitmap[];
 
-    private int index = 0;
+    public SystemFileTable() { }
 
-    public SystemFileTable() {
+
+  /*  public int addFile(){
+        int loc = 0;
+        loc = findSpace();
+        if (loc == -1) {
+            return -1;
+        }
+
 
     }
-
-    /*
-        public int add(INode iNode, int inumber, int fd) {
-            if (bitmap[fd] != 0)
-
-        }
-        */
-    public int find_space() {
+*/
+    public int findSpace() {
         for (int i = 0; i < MAX_FILES; i++) {
             if (bitmap[i] == 0)
-                return index;
-            else
-                return -1; // needs to be an error
+                return i;
         }
-        return 0;
+        return -1;
+    }
+    public int check(int fd){
+        if (bitmap[fd] == 1){
+            return 0;
+        }
+        return -1;
+    }
+    public void remove(int fd) {
+        bitmap[fd] = 0;
     }
 }
