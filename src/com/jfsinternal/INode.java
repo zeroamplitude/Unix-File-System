@@ -13,7 +13,7 @@ public class INode {
     new[11] - first 12 blocks point to direct blocks (contain addresses that contain data of the file)
     128 bytes * 12 = 1536 bytes of data accessed directly
      */
-    int[] directAccess = new int[11];
+    int[] directAccess = new int[12];
 
     // give inode name/type/owner/ computer file size
     void setName(String name) {
