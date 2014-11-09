@@ -7,7 +7,6 @@
 
 typedef struct {
     char name[MAX_SIZE_NAME];
-    int32 magic1;
     int32 uid;
     int32 gid;
     int32 mode;
