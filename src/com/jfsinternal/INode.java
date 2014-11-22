@@ -32,8 +32,8 @@ public class INode {
 
     public int getiNum() {
         try {
-            iNum = this.iNum;
-        } catch (Char e) {
+            return this.iNum;
+        } catch () {
             System.out.println("Could not get iNum" + e);
             return -1;
         }
