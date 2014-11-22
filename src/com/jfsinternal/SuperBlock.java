@@ -22,7 +22,7 @@ public class SuperBlock {
     public SuperBlock() {
         numBlocks = BlockIO.NUMBLKS;
         blockSize = BlockIO.BLKSIZE;
-        freeBlockList = getList();
+        //freeBlockList = getList();
     }
 
 
@@ -47,14 +47,17 @@ public class SuperBlock {
     }
 
     int getSuperBlock() {
+
         return 0;
     }
 
     int getEmptyBlock(int freeBlkNo) {
+
         return 0;
     }
 
     int releaseBlock(int releaseBlkNo) {
+
         return 0;
     }
 

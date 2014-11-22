@@ -5,12 +5,16 @@ package com.jfsinternal;
  */
 public class Block {
 
-    /*public Block(){
-        block =
+    byte[] block = new byte[BlockIO.BLKSIZE];
+
+    public Block(){
+        for (int i = 0; i < BlockIO.BLKSIZE; i++) {
+            block = null;
+        }
 
     }
 
     public byte[] getBlock() {
         return block;
-    }*/
+    }
 }
