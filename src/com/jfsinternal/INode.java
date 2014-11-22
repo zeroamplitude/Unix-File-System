@@ -42,7 +42,7 @@ public class INode {
     public int setName(String name) {
         try {
             this.name = name;
-        } catch (Char  e) {
+        } catch (char  e) {
             System.out.println("Set name error:" + e);
             return -1;
         }

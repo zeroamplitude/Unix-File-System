@@ -16,7 +16,7 @@ import com.jfsinternal.INode;
 public class SystemFileTable {
     public static final int MAX_FILES = 64;
     public int bitmap[];
-    public int fd[] = new int[64];
+    public int inode_location[] = new int[64];
 
 
     public SystemFileTable() { }
@@ -35,17 +35,17 @@ public class SystemFileTable {
                 7. put that inode address into the system open table
          */
 
-        int location = 0;
-        location = findSpace();
-        if (location == -1) {
+        int fd = 0;
+        fd = findSpace();
+        if (fd == -1) {
             return -1; // throws error that the table is already full ie. cant open more than 64 files
         }
         else {
-            bitmap[location] = 1; // location is taken
+            bitmap[fd] = 1; // location is taken
             // fd[location] = get_inum(block); // store the inode (FCB) in the system open table
         }
 
-        return location;
+        return fd; // this is the 'fd'
     }
 
 
@@ -57,10 +57,10 @@ public class SystemFileTable {
         return -1; // throws error that the table is already full ie. cant open more than 64 files
     }
 
-    int checkExists(int inum) {
+    int checkExists(int fd) {
         for (int i = 0; i < MAX_FILES; i++){
             if (bitmap[i] == 1){
-                if (fd[i]==inum) {
+                if (inode_location[i]==fd) {
                     return 0;
                 }
             }
@@ -68,16 +68,16 @@ public class SystemFileTable {
         return -1; // can't read/write since the file is not open
     }
 
-    public void remove(int inum) {// essentially close file
+    public void remove(int fd) {// essentially close file
         // to remove (close a file)
         // get the file you want to close
         // search through for a spot that is taken
 
         for (int i = 0; i < MAX_FILES; i++){
             if (bitmap[i] == 1){
-                if (fd[i]==inum) {
+                if (inode_location[i]==fd) {
                     bitmap[i] = 0;
-                    fd[i] = 0;
+                    inode_location[i] = 0;
                 }
             }
         }
