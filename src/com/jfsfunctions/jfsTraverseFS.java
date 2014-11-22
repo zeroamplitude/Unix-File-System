@@ -9,7 +9,7 @@ public class jfsTraverseFS {
 
     public static int traverseAndCreate(int[] tokens){
 
-    int[] rootBlocks = getInode(getRoot()).getDirectAccess();
+    //int[] rootBlocks = getInode(getRoot()).getDirectAccess();
 
 
         return 0;

@@ -8,7 +8,7 @@ import com.jfsinternal.SuperBlock;
 public class BlockIOTest {
 
     public static void main(String[] args) {
-	    BlockIO disk = new BlockIO();
+        BlockIO disk = new BlockIO();
         SuperBlock sb = new SuperBlock();
         DiskBitmap bitmap = new DiskBitmap();
         //SuperBlkBuffer sbb = new SuperBlkBuffer();
@@ -17,21 +17,21 @@ public class BlockIOTest {
         sb.putSuperBlock(bitmap);
         /*
         String testFile = "Test";
-        byte[] dataTest;
+        Byte[] dataTest;
         dataTest = stringToByteASCII(testFile);
         Disk1.putBlock(0, dataTest);*/
 
 
-        byte[] testbuf = new byte[BlockIO.BLKSIZE];
-        for (int i = 0; i < BlockIO.BLKSIZE; i++) {
-            testbuf[i] = 1;
-        }
-
-        Block block = new Block();
-
-        disk.putBlock(0, sb.buffer.getBuffer());
-        disk.putBlock(1, testbuf);
-        disk.putBlock(2, block.getBlock());
+//        byte[] testbuf = new byte[BlockIO.BLKSIZE];
+//        for (int i = 0; i < BlockIO.BLKSIZE; i++) {
+//            testbuf[i] = 1;
+//        }
+//
+//        Block block = new Block();
+//
+//        disk.putBlock(0, sb.buffer.getBuffer());
+//        disk.putBlock(1, testbuf);
+//        disk.putBlock(2, block.getBlock());
 
 
         byte[] dataTest2 = new byte[128];
@@ -40,14 +40,11 @@ public class BlockIOTest {
         System.out.println(dataTest2);
 
 
-
-
-
     }
 
-    public static byte[] stringToByteASCII(String str) {
+    public static Byte[] stringToByteASCII(String str) {
         char[] buffer = str.toCharArray();
-        byte[] b = new byte[128];
+        Byte[] b = new Byte[128];
         for (int i = 0; i < b.length; i++) {
             if (i < buffer.length) {
                 b[i] = (byte) buffer[i];
@@ -58,13 +55,13 @@ public class BlockIOTest {
         return b;
     }
 
-    public static String bytesToString(byte[] bytes) {
+    public static String BytesToString(Byte[] bytes) {
         char[] buffer = new char[bytes.length >> 1];
-        for(int i = 0; i < buffer.length; i++) {
-             int bpos = i << 1;
-             char c = (char)(((bytes[bpos]&0x00FF)<<8)
-                     + (bytes[bpos+1]&0x00FF));
-             buffer[i] = c;
+        for (int i = 0; i < buffer.length; i++) {
+            int bpos = i << 1;
+            char c = (char) (((bytes[bpos] & 0x00FF) << 8)
+                    + (bytes[bpos + 1] & 0x00FF));
+            buffer[i] = c;
         }
         return new String(buffer);
     }
