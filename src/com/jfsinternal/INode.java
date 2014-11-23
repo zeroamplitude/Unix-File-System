@@ -13,8 +13,8 @@ public class INode implements InternalConstants {
     char[] name;                        // 12 bytes
     byte type;                          //  1 byte
     short fileSize;                     //  2 bytes
-    short[] direct;                       // 24 bytes
-    IndirectBlock singleIndirect;             //  8 bytes
+    short[] direct;                     // 24 bytes
+    IndirectBlock singleIndirect;       //  8 bytes
     IndirectBlock[] doubleIndirect;     // 16 bytes
                                         // ---------
                                         // 64 bytes
@@ -47,16 +47,6 @@ public class INode implements InternalConstants {
         return 0;
     }
 
-    public int getName() {
-        try {
-            name = this.name; // <------This is wrong-----<<<
-        } catch (Exception e) {
-            System.out.println("Get name error:" + e);
-            return -1;
-        }
-        return 0;
-    }
-
     public int setType(byte type) {
         try {
             this.type = type;
@@ -72,16 +62,6 @@ public class INode implements InternalConstants {
             this.fileSize = size;
         } catch (Exception e) {
             System.out.println("Set file size error: " + e);
-            return -1;
-        }
-        return 0;
-    }
-
-    public int getFileSize() {
-        try {
-            fileSize = this.fileSize; // <-----This is wrong----<<<
-        } catch (Exception e) {
-            System.out.println("Get file size error: " + e);
             return -1;
         }
         return 0;
