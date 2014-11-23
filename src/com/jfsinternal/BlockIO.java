@@ -20,7 +20,7 @@ public class BlockIO {
     /* Size of blocks on simulated disk */
     public static final int BLKSIZE = 128;
     /* Number of blocks on simulated disk */
-    protected static final int NUMBLKS = 512;
+    public static final int NUMBLKS = 512;
 
     /* File descriptor of disk data file when open.
      * A null value indicated file is not opened. */
@@ -133,10 +133,10 @@ public class BlockIO {
      * @return 0 if successful, -1 otherwise
      */
     public int putBlock(int blocknum, byte[] buffer){
-        /*if (buffer.length != BLKSIZE){
+        if (buffer.length != BLKSIZE){
             throw new RuntimeException("putBlock: bad buffer size "
                     + buffer.length);
-        }*/
+        }
         if (diskfd == null){
             if (init_disk() != 0) return -1;
         }

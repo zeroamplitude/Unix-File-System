@@ -12,11 +12,13 @@ public class DiskBitmap {
         bitmap = new byte[BlockIO.NUMBLKS];
     }
 
-    public int updateBitmap() {
-            bitmap[0] = 1;
-            bitmap[1] = 1;
-            bitmap[2] = 1;
-            bitmap[3] = 1;
+    public int putBit(int blocknum, byte block) {
+        try {
+            bitmap[blocknum] = block;
+        } catch (Exception e) {
+            System.out.println("Put bit error: " + e);
+            return -1;
+        }
         return 0;
     }
 

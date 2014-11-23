@@ -57,6 +57,15 @@ public class INode implements InternalConstants {
         return 0;
     }
 
+    public short getType(short iNumber) {
+        try {
+            return this.type;
+        } catch (Exception e) {
+            System.out.println("Get Type error: " + e);
+            return -1;
+        }
+    }
+
     public int setFileSize(short size) {
         try {
             this.fileSize = size;
@@ -65,6 +74,15 @@ public class INode implements InternalConstants {
             return -1;
         }
         return 0;
+    }
+
+    public short getSize(short iNumber) {
+        try {
+            return this.fileSize;
+        } catch (Exception e) {
+            System.out.println("Get size error: " + e);
+            return -1;
+        }
     }
 
     public int setBlocks(short[] blocks) {
