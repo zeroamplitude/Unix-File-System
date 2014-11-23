@@ -126,4 +126,13 @@ public class INode implements InternalConstants {
         }
         return 0;
     }
-}
+
+    public short getBlocks(short iNumber, short fileSize) {
+        byte[] file;
+        if (fileSize < NUMDIRECT) {
+            for (int i = 0; i < fileSize) {
+
+            }
+        }
+
+    }
