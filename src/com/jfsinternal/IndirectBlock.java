@@ -13,4 +13,10 @@ public class IndirectBlock implements InternalConstants{
             indirect[i] = blocks[i];
         }
     }
+
+    public IndirectBlock() {
+        for (int i = 0; i < SuperBlock.freeBlockCount; i++){
+
+        }
+    }
 }

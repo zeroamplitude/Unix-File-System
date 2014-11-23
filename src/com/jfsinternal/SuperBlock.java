@@ -11,18 +11,17 @@ import com.jfsmemory.SuperBlkBuffer;
  */
 public class SuperBlock {
 
-    public static final int NUMFILES = 64;
     public SuperBlkBuffer buffer = new SuperBlkBuffer();
 
     private int numBlocks;
     private int blockSize;
-    private int freeBlockCount;
-    IndirectBlock freeBlockList = new IndirectBlock();
+    protected static int freeBlockCount;
+    IndirectBlock freeBlockList;
 
     public SuperBlock() {
         numBlocks = BlockIO.NUMBLKS;
         blockSize = BlockIO.BLKSIZE;
-        //freeBlockList = getList();
+        freeBlockList = new IndirectBlock();
     }
 
 

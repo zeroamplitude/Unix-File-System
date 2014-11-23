@@ -7,7 +7,7 @@ import static com.jfsinternal.BlockIO.*;
  */
 public interface InternalConstants {
 
-    static final int MINNUMFILES = 64;
+    static final int NUMFILES = 64;
 
     static final int SIZEOFPATH = 6;
 
@@ -16,12 +16,13 @@ public interface InternalConstants {
     static final int SIZEOFINODETABLE = 8;
 
     /* Size of an individual iNode */
-    static final int  SIZEOFINODE = SIZEOFINODETABLE / MINNUMFILES;
+    static final int  SIZEOFINODE = SIZEOFINODETABLE / NUMFILES;
 
     static final int NUMDIRECT = 12;
 
     static final int NUMINDIRECT = BLKSIZE / Short.SIZE;
 
     static final int NUMDINDIRECT = NUMINDIRECT * NUMINDIRECT;
+
 
 }
