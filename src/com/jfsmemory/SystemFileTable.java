@@ -5,6 +5,7 @@ import com.jfsinternal.INode;
 /**
  * Created by 100487498 on 09/11/2014.
  *
+ *  MILAN KORNICER
  * create() and delete() are only available commands for files that are not in systemfiletable()
  * delete() needs to close() file in systemfiletable() and free blocks and then deletefile()
  *
@@ -22,7 +23,7 @@ public class SystemFileTable {
     public SystemFileTable() { }
 
     // before this we need to check if the file you are trying to open is already open or we will have multiple open files
-    public int addFile(int block){
+    public int addFile(int inum){
         /* to add a file into the system open table -- opening a file
             1. file must exist ( have been created )
             2. file must not already be opened in system file table
@@ -42,7 +43,7 @@ public class SystemFileTable {
         }
         else {
             bitmap[fd] = 1; // location is taken
-            // fd[location] = get_inum(block); // store the inode (FCB) in the system open table
+            // fd[location] = inum; // store the inode (FCB) in the system open table
         }
 
         return fd; // this is the 'fd'
@@ -57,7 +58,7 @@ public class SystemFileTable {
         return -1; // throws error that the table is already full ie. cant open more than 64 files
     }
 
-    int checkExists(int fd) {
+    public int checkExists(int fd) {
         for (int i = 0; i < MAX_FILES; i++){
             if (bitmap[i] == 1){
                 if (inode_location[i]==fd) {
@@ -66,6 +67,10 @@ public class SystemFileTable {
             }
         }
         return -1; // can't read/write since the file is not open
+    }
+
+    public int system_open_file(int fd) {
+        return inode_location[fd];
     }
 
     public void remove(int fd) {// essentially close file
