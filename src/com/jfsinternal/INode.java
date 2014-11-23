@@ -1,64 +1,131 @@
 package com.jfsinternal;
 
-import java.io.IOException;
+import java.util.Arrays;
+
 
 /**
- * Created by nicholas on 08/11/14.
+ * Created by Nicholas on 08/11/14.
+ * Modified by Nicholas on 23/11/14.
  */
-public class INode {
+public class INode implements InternalConstants {
 
-    public final static int ISIZE = 64;
-    String name;
-    int iNum;
-    Integer type; // 0 for file regular file , 1 for directory
-    int fileSize;
+    short iNumber;                      //  1 byte
+    char[] name;                        // 12 bytes
+    byte type;                          //  1 byte
+    short fileSize;                     //  2 bytes
+    short[] direct;                       // 24 bytes
+    IndirectBlock singleIndirect;             //  8 bytes
+    IndirectBlock[] doubleIndirect;     // 16 bytes
+                                        // ---------
+                                        // 64 bytes
 
-    /* combined scheme file system
-     * new[11] - first 12 blocks point to direct blocks (contain addresses that contain data of the file)
-     * 128 bytes * 12 = 1536 bytes of data accessed directly
-     */
-    int[] directAccess;
-
-
-    public INode(int iNum) {
-        self.iNum = iNum; //This is wrong
-        name = null;
-        type = null;
-        directAccess = new int[12];
-
+    public INode(short inumber) {
+        iNumber = inumber;
+        name = new char[SIZEOFPATH];
+        type = Byte.parseByte(null);
+        fileSize = 0;
+        direct = new short[NUMDIRECT];
     }
 
-
-
-    public int getiNum() {
+    public int getiNumber() {
         try {
-            return this.iNum;
-        } catch () {
+            iNumber = this.iNumber;
+        } catch (Exception e) {
             System.out.println("Could not get iNum" + e);
             return -1;
         }
+        return 0;
     }
 
-    public int setName(String name) {
+    public int setName(char[] name) {
         try {
             this.name = name;
-        } catch (Char  e) {
+        } catch (Exception e) {
             System.out.println("Set name error:" + e);
             return -1;
         }
         return 0;
     }
 
-    public int setType(int type) {
+    public int getName() {
         try {
-            this.type = type;
-        } catch {
-
+            name = this.name; // <------This is wrong-----<<<
+        } catch (Exception e) {
+            System.out.println("Get name error:" + e);
+            return -1;
         }
-
+        return 0;
     }
 
+    public int setType(byte type) {
+        try {
+            this.type = type;
+        } catch (Exception e) {
+            System.out.println("Set type error: " + e);
+            return -1;
+        }
+        return 0;
+    }
 
+    public int setFileSize(short size) {
+        try {
+            this.fileSize = size;
+        } catch (Exception e) {
+            System.out.println("Set file size error: " + e);
+            return -1;
+        }
+        return 0;
+    }
 
+    public int getFileSize() {
+        try {
+            fileSize = this.fileSize; // <-----This is wrong----<<<
+        } catch (Exception e) {
+            System.out.println("Get file size error: " + e);
+            return -1;
+        }
+        return 0;
+    }
 
+    public int setBlocks(short[] blocks) {
+        try {
+            if (blocks.length > NUMDIRECT) {
+                for (int i = 0; i < NUMDIRECT; i++) {
+                    direct[i] = blocks[i];
+                }
+                if (Arrays.copyOfRange(blocks, NUMDIRECT,
+                        blocks.length).length > NUMINDIRECT) {
+
+                    singleIndirect = new IndirectBlock(
+                            Arrays.copyOfRange(blocks,
+                            NUMDIRECT, NUMDIRECT + NUMINDIRECT));
+
+                    doubleIndirect = new IndirectBlock[NUMINDIRECT];
+                    if (blocks.length > NUMDINDIRECT) {
+                        System.out.println("File Size is too large");
+                        return -1;
+                    } else {
+                        int blks = NUMDIRECT + NUMINDIRECT;
+                        boolean finished = false;
+                        for (int i = 0; i < NUMINDIRECT; i++) {
+                            for (int j = 0; j < NUMINDIRECT; j++) {
+                                doubleIndirect[i].indirect[j] = blocks[blks];
+                                blks++;
+                                if (blks == blocks.length) {finished = true; break;}
+                            }
+                            if (finished) {break;}
+                        } } } else {
+                    singleIndirect = new IndirectBlock(Arrays.
+                            copyOfRange(blocks, NUMDIRECT,
+                                    blocks.length));
+                } } else {
+                for (int i = 0; i < blocks.length; i++) {
+                    direct[i] = blocks[i];
+                } }
+        } catch (Exception e) {
+            System.out.println("Set direct error: " + e);
+            return -1;
+        }
+        return 0;
+    }
 }

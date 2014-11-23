@@ -1,6 +1,5 @@
 package com.jfsinternal.testsuit;
 
-import com.jfsinternal.Block;
 import com.jfsinternal.BlockIO;
 import com.jfsinternal.DiskBitmap;
 import com.jfsinternal.SuperBlock;

@@ -1,18 +1,16 @@
 package com.jfsinternal;
 
 /**
- * Created by nicholas on 09/11/14.
+ * Created by Nicholas De Souza on 09/11/14.
+ * Modified by Nicholas De Souza on 23/11/14.
  */
-public class IndirectBlock {
-    public int pointer[] = new int[BlockIO.BLKSIZE/4];
+public class IndirectBlock implements InternalConstants{
 
-    public IndirectBlock() {
-        makeIndirectBlock();
-    }
+    public short indirect[] = new short[NUMINDIRECT];
 
-    public void makeIndirectBlock() {
-        for (int i = 0; i < BlockIO.BLKSIZE/4; i++) {
-            pointer[i] = 0;
+    public IndirectBlock(short[] blocks) {
+        for (int i = 0; i < blocks.length; i++) {
+            indirect[i] = blocks[i];
         }
     }
 }
