@@ -1,7 +1,5 @@
 package com.jfsfunctions;
 
-import com.jfsinternal.INode;
-
 /**
  * @author Modified  Nicholas De Souza on 24/11/14.
  */

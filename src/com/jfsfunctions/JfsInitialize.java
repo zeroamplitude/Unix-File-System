@@ -1,5 +1,6 @@
 package com.jfsfunctions;
 
+import com.jfsglobal.JfsGlobalInterface;
 import com.jfsinternal.*;
 /**
  *
@@ -42,6 +43,12 @@ public class JfsInitialize extends JfsInterface {
 
         // Sets iNode table zero's
         error = clearInodeTable();
+        if (error == -1) {
+            return -1;
+        }
+
+        // Writes root to File Table
+        error = writeRoot();
         if (error == -1) {
             return -1;
         }
@@ -130,6 +137,35 @@ public class JfsInitialize extends JfsInterface {
         }
         return 0;
     }
+
+    private int writeRoot() {
+        short location = 11;
+        String name = "/";
+        short type = 1;
+
+
+
+        byte[] rootBuf = new byte[sb.BLKSIZE];
+
+        rootBuf[0] = (byte)(location >> 8);
+        rootBuf[1] = (byte)(location);
+
+        byte[] nameBuf = name.getBytes();
+        rootBuf[2] = nameBuf[0];
+
+        rootBuf[14] = (byte)(type >> 8);
+        rootBuf[15] = (byte)(type);
+
+        try {
+            disk.putBlock(2, rootBuf);
+        } catch (Exception e) {
+            System.out.println("Fatal error: Could not write" +
+                    "root to disk: " + e);
+            return -1;
+        }
+        return 0;
+    }
+
 
     private int mkFreeBlkList() {
         short i = 11;

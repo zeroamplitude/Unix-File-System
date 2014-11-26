@@ -24,6 +24,7 @@ public class ReadBlockTest {
         short nextblk4 = (short) (((buffer[8] & 0x00ff) << 8)
                 + (buffer[9] & 0x00ff));
 
+
         System.out.println(nextblk);
         System.out.println(nextblk1);
         System.out.println(nextblk2);
