@@ -1,5 +1,7 @@
 package com.jfsfunctions;
 
+import com.jfsglobal.JfsGlobalInterface;
+
 /**
  * jfsInterface:
  *      This is the interface for the javaFileSystem
@@ -7,7 +9,7 @@ package com.jfsfunctions;
  *
  * @author Nicholas De Souza
  */
-public interface JfsInterface {
+public interface JfsInterface extends JfsFunctionConstants, JfsFunctionMethods, JfsGlobalInterface {
 
     int jfsOpen(String pathname);
 

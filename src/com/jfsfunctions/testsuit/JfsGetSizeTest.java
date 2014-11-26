@@ -1,4 +1,4 @@
-package com.jfstest;
+package com.jfsfunctions.testsuit;
 
 /**
  * Created by 100488265 on 09/11/2014.

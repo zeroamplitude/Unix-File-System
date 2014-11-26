@@ -7,17 +7,17 @@ import java.util.Arrays;
  * Created by Nicholas on 08/11/14.
  * Modified by Nicholas on 23/11/14.
  */
-public class INode implements InternalConstants {
+public class INode implements JfsInternalConstants {
 
-    short iNumber;                      //  1 byte
+    int iNumber;                      //  1 byte
     char[] name;                        // 12 bytes
     byte type;                          //  1 byte
     short fileSize;                     //  2 bytes
     short[] direct;                     // 24 bytes
     IndirectBlock singleIndirect;       //  8 bytes
     IndirectBlock[] doubleIndirect;     // 16 bytes
-                                        // ---------
-                                        // 64 bytes
+    // ---------
+    // 64 bytes
 
     public INode(short inumber) {
         iNumber = inumber;
@@ -96,7 +96,7 @@ public class INode implements InternalConstants {
 
                     singleIndirect = new IndirectBlock(
                             Arrays.copyOfRange(blocks,
-                            NUMDIRECT, NUMDIRECT + NUMINDIRECT));
+                                    NUMDIRECT, NUMDIRECT + NUMINDIRECT));
 
                     doubleIndirect = new IndirectBlock[NUMINDIRECT];
                     if (blocks.length > NUMDINDIRECT) {
@@ -109,17 +109,26 @@ public class INode implements InternalConstants {
                             for (int j = 0; j < NUMINDIRECT; j++) {
                                 doubleIndirect[i].indirect[j] = blocks[blks];
                                 blks++;
-                                if (blks == blocks.length) {finished = true; break;}
+                                if (blks == blocks.length) {
+                                    finished = true;
+                                    break;
+                                }
                             }
-                            if (finished) {break;}
-                        } } } else {
+                            if (finished) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
                     singleIndirect = new IndirectBlock(Arrays.
                             copyOfRange(blocks, NUMDIRECT,
                                     blocks.length));
-                } } else {
+                }
+            } else {
                 for (int i = 0; i < blocks.length; i++) {
                     direct[i] = blocks[i];
-                } }
+                }
+            }
         } catch (Exception e) {
             System.out.println("Set direct error: " + e);
             return -1;
@@ -128,11 +137,17 @@ public class INode implements InternalConstants {
     }
 
     public short getBlocks(short iNumber, short fileSize) {
-        byte[] file;
+        byte[] file = new byte[BLKSIZE];
         if (fileSize < NUMDIRECT) {
-            for (int i = 0; i < fileSize) {
-
+            for (int i = 0; i < fileSize; i++) {
+                try {
+                    disk.getBlock(i, file);
+                } catch (Exception e) {
+                    System.out.println("INode: getBlock error - " + e);
+                    return -1;
+                }
             }
         }
-
+        return 0;
     }
+}

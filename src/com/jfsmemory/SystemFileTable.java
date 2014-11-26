@@ -1,7 +1,5 @@
 package com.jfsmemory;
 
-import com.jfsinternal.INode;
-
 /**
  * Created by 100487498 on 09/11/2014.
  *

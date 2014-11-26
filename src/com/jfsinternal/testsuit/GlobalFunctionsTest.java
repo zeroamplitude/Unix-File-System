@@ -1,7 +1,6 @@
 package com.jfsinternal.testsuit;
 
-import com.jfsinternal.ErrorHandling;
-import com.jfsinternal.GlobalFunctions;
+import com.jfsglobal.GlobalFunctions;
 
 /**
  * Created by 100487498 on 09/11/2014.

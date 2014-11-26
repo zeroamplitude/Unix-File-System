@@ -1,7 +1,5 @@
 package com.jfsinternal.testsuit;
 
-import com.jfsinternal.INode;
-
 /**
  * Created by nicholas on 22/11/14.
  */
