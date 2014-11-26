@@ -12,8 +12,8 @@ public class BlockIOTest {
         DiskBitmap bitmap = new DiskBitmap();
         //SuperBlkBuffer sbb = new SuperBlkBuffer();
 
-        bitmap.updateBitmap();
-        sb.putSuperBlock(bitmap);
+//        bitmap.updateBitmap();
+//        sb.putSuperBlock(bitmap);
         /*
         String testFile = "Test";
         Byte[] dataTest;

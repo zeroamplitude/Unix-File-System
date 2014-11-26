@@ -13,9 +13,9 @@ public class SuperBlkBufferTest {
         SuperBlock sb = new SuperBlock();
         DiskBitmap bitmap = new DiskBitmap();
         //SuperBlkBuffer sbb = new SuperBlkBuffer();
-
-        bitmap.updateBitmap();
-        sb.putSuperBlock(bitmap);
+//
+//        bitmap.updateBitmap();
+//        sb.putSuperBlock(bitmap);
 
 
 

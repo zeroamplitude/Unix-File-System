@@ -136,18 +136,18 @@ public class INode implements JfsInternalConstants {
         return 0;
     }
 
-    public short getBlocks(short iNumber, short fileSize) {
-        byte[] file = new byte[BLKSIZE];
-        if (fileSize < NUMDIRECT) {
-            for (int i = 0; i < fileSize; i++) {
-                try {
-                    disk.getBlock(i, file);
-                } catch (Exception e) {
-                    System.out.println("INode: getBlock error - " + e);
-                    return -1;
-                }
-            }
-        }
-        return 0;
-    }
+//    public short getBlocks(short iNumber, short fileSize) {
+//        byte[] file = new byte[BLKSIZE];
+//        if (fileSize < NUMDIRECT) {
+//            for (int i = 0; i < fileSize; i++) {
+//                try {
+//                    disk.getBlock(i, file);
+//                } catch (Exception e) {
+//                    System.out.println("INode: getBlock error - " + e);
+//                    return -1;
+//                }
+//            }
+//        }
+//        return 0;
+//    }
 }

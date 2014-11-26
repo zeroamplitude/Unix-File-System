@@ -227,6 +227,7 @@ public class JfsTest {
                     break;
 
                 case 'i': /* Initialize the file system */
+                    jfs = new JfsInitialize();
                     System.out.println("Enter 1 to erase disk while " +
                             "initializing, 0 otherwise: ");
                     p1 = in.nextInt();

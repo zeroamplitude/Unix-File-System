@@ -14,9 +14,9 @@ public class IndirectBlock implements JfsInternalConstants {
         }
     }
 
-    public IndirectBlock() {
-        for (int i = 0; i < SuperBlock.freeBlockCount; i++){
-
-        }
-    }
+//    public IndirectBlock() {
+//        for (int i = 0; i < SuperBlock.freeBlockCount; i++){
+//
+//        }
+//    }
 }

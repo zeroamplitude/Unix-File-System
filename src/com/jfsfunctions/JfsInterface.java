@@ -9,25 +9,25 @@ import com.jfsglobal.JfsGlobalInterface;
  *
  * @author Nicholas De Souza
  */
-public interface JfsInterface extends JfsFunctionConstants, JfsFunctionMethods, JfsGlobalInterface {
+public abstract class JfsInterface { // extends JfsFunctionConstants, JfsFunctionMethods, JfsGlobalInterface {
 
-    int jfsOpen(String pathname);
+    public int jfsOpen(String pathname){return 0;}
 
-    int jfsRead(int fd, int start, int length, String mem_pointer);
+    public int jfsRead(int fd, int start, int length, String mem_pointer){return 0;}
 
-    int jfsWrite(int fd, int start, int length, String mem_pointer);
+    public int jfsWrite(int fd, int start, int length, String mem_pointer){return 0;}
 
-    int jfsReadDir(int fd, String mem_pointer);
+    public int jfsReadDir(int fd, String mem_pointer){return 0;}
 
-    int jfsClose(int fd);
+    public int jfsClose(int fd){return 0;}
 
-    int jfsDelete(String pathname);
+    public int jfsDelete(String pathname){return 0;}
 
-    int jfsCreate(String pathname, int type);
+    public int jfsCreate(String pathname, int type){return 0;}
 
-    int jfsGetSize(String pathname);
+    public int jfsGetSize(String pathname){return 0;}
 
-    int jfsGetType(String pathname);
+    public int jfsGetType(String pathname){return 0;}
 
-    int jfsInitialize(int p1);
+    public int jfsInitialize(int p1){return 0;}
 }

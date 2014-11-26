@@ -5,7 +5,8 @@ import java.util.StringTokenizer;
 /**
  * @author <<Fill in your name here>>
  */
-public abstract class JfsGetType implements JfsInterface {
+public class JfsGetType extends JfsInterface {
+    @Override
     public int jfsGetType(String pathname) {
 
          /*

@@ -5,6 +5,6 @@ package com.jfsfunctions;
  */
 public interface JfsFunctionMethods {
 
-    static int nameToInumber;
+    //static int nameToInumber(int );
 
 }

@@ -4,7 +4,7 @@ package com.jfsglobal;
  * Created by 100487498 on 09/11/2014.
  */
 public class GlobalFunctions {
-// also handles errors
+
     public String fileFromPath(String pathName) {
         int len = pathName.length();
         char[] charArray = pathName.toCharArray();
@@ -15,7 +15,6 @@ public class GlobalFunctions {
                 return fileName;
             }
         }
-
         return pathName;
     }
 

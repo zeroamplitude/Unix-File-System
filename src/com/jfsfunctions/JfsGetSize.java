@@ -5,9 +5,8 @@ import java.util.StringTokenizer;
  * sfs_getsize(char *pathname): If the specified file is a regular file, this function should return the number of
  * bytes in the file. If it is a directory file, this function should return the number of directory entries in the file.
  */
-public abstract class JfsGetSize implements JfsInterface {
-
-
+public class JfsGetSize extends JfsInterface {
+    @Override
     public int jfsGetSize(String pathname) {
         int fileSize = 0;
 

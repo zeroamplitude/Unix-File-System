@@ -5,8 +5,9 @@ import com.jfsinternal.INode;
 /**
  * @author Modified  Nicholas De Souza on 24/11/14.
  */
-public abstract class JfsReadDir implements JfsInterface {
-    public int jfsReadDir(int fd, char[] mem_pointer) {
+public class JfsReadDir extends JfsInterface {
+    @Override
+    public int jfsReadDir(int fd, String mem_pointer) {
 
         return 0;
     }
@@ -37,22 +38,22 @@ public abstract class JfsReadDir implements JfsInterface {
      *                     directory and could only find a file, or upon
      *                     arrival of the root directory.
      */
-    protected int iName(int iNumber, String[] path) throws Exception {
-        for (int i = 0; i < path.length; i++) {
-            if (INode[iNumber].type != Type.DIRECTORY) {
-                throw new Exception(path + " No such file or directory");
-            }
-            iNumber  == nameToInumber(INode[iNumber], path[i]);
-            if (iNumber == 0) {
-                throw new Exception("No such file or directory");
-                return -1;
-            } }
-        return iNumber;
-    }
-
-    int nameToINumber(INode node, String name) {
-
-    }
+//    protected int iName(int iNumber, String[] path) throws Exception {
+//        for (int i = 0; i < path.length; i++) {
+//            if (INode[iNumber].type != Type.DIRECTORY) {
+//                throw new Exception(path + " No such file or directory");
+//            }
+//            iNumber  == nameToInumber(INode[iNumber], path[i]);
+//            if (iNumber == 0) {
+//                throw new Exception("No such file or directory");
+//                return -1;
+//            } }
+//        return iNumber;
+//    }
+//
+//    int nameToINumber(INode node, String name) {
+//
+//    }
 
 
 }

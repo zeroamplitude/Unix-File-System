@@ -5,17 +5,17 @@ import com.jfsinternal.*;
  *
  * @author Nicholas De souza
  */
-public abstract class JfsInitialize implements JfsInterface {
+public class JfsInitialize extends JfsInterface {
     private BlockIO disk;
     private SuperBlock sb;
     public DiskBitmap bitmap;
-    byte[] buffer;
     int error = 0;
 
     /**
      * @param erase
      * @return
      */
+    @Override
     public int jfsInitialize(int erase) {
         disk = new BlockIO();
 
@@ -38,21 +38,22 @@ public abstract class JfsInitialize implements JfsInterface {
         if (error == -1) {
             return -1;
         }
-
-
-        // Sets iNode table zero's
-        error = clearInodeTable();
-        if (error == -1) {
-            return -1;
-        }
+//
+//
+//        // Sets iNode table zero's
+//        error = clearInodeTable();
+//        if (error == -1) {
+//            return -1;
+//        }
 
         return 0;
     }
 
     public int wipeDisk() {
+        byte[] buffer = new byte[128];
         try {
-            for (int blocks = 0; blocks < sb.diskSize; blocks++) {
-                for (int b = 0; b < sb.blockSize; b++) {
+            for (int blocks = 0; blocks < 511; blocks++) {
+                for (int b = 0; b < 127; b++) {
                     buffer[b] = 0;
                 }
                 disk.putBlock(blocks, buffer);
@@ -64,7 +65,7 @@ public abstract class JfsInitialize implements JfsInterface {
     }
 
     private int writeSuperBlock() {
-
+        byte[] buffer = new byte[128];
         // Write the total number of blocks to the buffer
         buffer[0] = (byte)(sb.diskSize >> 8);
         buffer[1] = (byte)(sb.diskSize);
@@ -89,23 +90,23 @@ public abstract class JfsInitialize implements JfsInterface {
             disk.putBlock(0, buffer);
         } catch (Exception e) {
             System.out.println("Fatal error: Could not write" +
-                    "superblock to disk");
+                    "superblock to disk" + e);
             return -1;
         }
         return 0;
     }
 
     private int writeDiskBitmap() {
-        byte[] bmBuffer = new byte[sb.NUMBLKS];
+        byte[] bmBuffer = new byte[sb.BLKSIZE];
 
-        for (int i = 0; i < (sb.diskSize - 1); i++) {
-            bmBuffer[i] = 0;
+        for (int i = 0; i < (127); i++) {
+            bmBuffer[i] = 1;
         }
         try {
             disk.putBlock(1, bmBuffer);
         } catch (Exception e) {
             System.out.println("Fatal error: Could not write " +
-                    "bitmap to disk");
+                    "bitmap to disk" + e);
             return -1;
         }
         return 0;

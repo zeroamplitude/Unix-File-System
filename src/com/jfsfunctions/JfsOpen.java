@@ -3,7 +3,8 @@ package com.jfsfunctions;
 /**
  * @author <<Fill in your name here>>
  */
-public abstract class JfsOpen implements JfsInterface {
+public class JfsOpen extends JfsInterface {
+
     public int jfsOpen(String pathname) {
 
         int location = 0;

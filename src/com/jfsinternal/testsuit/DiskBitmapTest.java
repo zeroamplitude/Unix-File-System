@@ -10,7 +10,7 @@ public class DiskBitmapTest {
     public static void main(String[] args) {
         DiskBitmap bm = new DiskBitmap();
 
-        bm.updateBitmap();
+        //bm.updateBitmap();
 
         //byte test = bm.encodeBitmap(0);
 
