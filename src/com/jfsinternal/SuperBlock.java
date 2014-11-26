@@ -31,7 +31,7 @@ public class SuperBlock implements JfsInternalConstants {
         blockSize = BLKSIZE;
         iNodeCount = NUMFILES;
         iNodeTable = SIZEOFINODETABLE;
-        freeBlkHeap = SIZEOFINODETABLE + 2;
+        freeBlkHeap = SIZEOFINODETABLE + 3;
     }
 
 

@@ -9,7 +9,7 @@ import com.jfsglobal.JfsGlobalInterface;
  *
  * @author Nicholas De Souza
  */
-public abstract class JfsInterface { // extends JfsFunctionConstants, JfsFunctionMethods, JfsGlobalInterface {
+public abstract class JfsInterface { //implements JfsFunctionConstants, JfsFunctionMethods, JfsGlobalInterface {
 
     public int jfsOpen(String pathname){return 0;}
 

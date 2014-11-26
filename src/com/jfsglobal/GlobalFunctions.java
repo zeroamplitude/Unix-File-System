@@ -3,7 +3,7 @@ package com.jfsglobal;
 /**
  * Created by 100487498 on 09/11/2014.
  */
-public class GlobalFunctions {
+public class GlobalFunctions implements JfsGlobalInterface{
 
     public String fileFromPath(String pathName) {
         int len = pathName.length();

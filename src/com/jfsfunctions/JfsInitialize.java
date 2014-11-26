@@ -12,8 +12,9 @@ public class JfsInitialize extends JfsInterface {
     int error = 0;
 
     /**
+     *
      * @param erase
-     * @return
+     * @return 0 if successful, -1 on failure
      */
     @Override
     public int jfsInitialize(int erase) {
@@ -38,13 +39,18 @@ public class JfsInitialize extends JfsInterface {
         if (error == -1) {
             return -1;
         }
-//
-//
-//        // Sets iNode table zero's
-//        error = clearInodeTable();
-//        if (error == -1) {
-//            return -1;
-//        }
+
+        // Sets iNode table zero's
+        error = clearInodeTable();
+        if (error == -1) {
+            return -1;
+        }
+
+        // Creates Free Block List
+        error = mkFreeBlkList();
+        if (error == -1) {
+            return -1;
+        }
 
         return 0;
     }
@@ -113,20 +119,37 @@ public class JfsInitialize extends JfsInterface {
     }
 
     private int clearInodeTable() {
-
-        byte[] clear = new byte[sb.NUMBLKS];
-
-        for (int i = 1; i <= sb.iNodeTable; i++) {
-            disk.putBlock(i, clear);
+        byte[] clear = new byte[sb.BLKSIZE];
+        try {
+            for (int i = 1; i <= sb.iNodeTable; i++) {
+                disk.putBlock((i + 1), clear);
+            }
+        } catch (Exception e) {
+            System.out.println("Fatal error: Could not clear iNode table: " + e);
+            return -1;
         }
-
         return 0;
     }
 
+    private int mkFreeBlkList() {
+        short i = 11;
+        while (i < sb.diskSize) {
+            byte[] buffer = new byte[128];
+            short nextFreeBlock = (short) (i + 1);
+            buffer[0] = (byte)(nextFreeBlock >> 8);
+            buffer[1] = (byte)(nextFreeBlock);
 
-
-
-
+            try {
+                disk.putBlock(i, buffer);
+            } catch (Exception e) {
+                System.out.println("Error: Could not" +
+                        "create FreeBlock List" + e);
+                return -1;
+            }
+            i++;
+        }
+        return 0;
+    }
 
 }
 
