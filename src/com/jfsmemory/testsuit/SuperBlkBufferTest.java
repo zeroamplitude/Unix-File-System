@@ -20,9 +20,9 @@ public class SuperBlkBufferTest {
 
 
 
-        byte[] test = sb.buffer.getBuffer();
-        for (int i = 0; i < test.length; i++)
-            System.out.print(test[i] + " ");
+//        byte[] test = sb.buffer.getBuffer();
+//        for (int i = 0; i < test.length; i++)
+//            System.out.print(test[i] + " ");
 
     }
 

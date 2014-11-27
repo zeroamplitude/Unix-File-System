@@ -7,19 +7,21 @@ package com.jfsinternal;
 public interface JfsInternalConstants {
 
     /* The total size of the disk in blocks */
-    static final short NUMBLKS = 512;
+    static final short NUMBLKS = BlockIO.NUMBLKS;
 
     /*The size of each block on disk */
-    static final short BLKSIZE = 128;
+    static final short BLKSIZE = BlockIO.BLKSIZE;
 
     /* Number of files on disk */
     static final short NUMFILES = 64;
 
     /* Size of the iNode Table in blocks */
-    static final short SIZEOFINODETABLE = 8;
+    static final short INODETBLSIZE = 8;
+
+    static final short INODETBLSTART = 2;
 
     /* Size of an individual iNode */
-    static final short INODESIZE = SIZEOFINODETABLE / NUMFILES;
+    static final short INODESIZE = INODETBLSIZE / NUMFILES;
 
     static final short NUMDIRECT = 12;
 

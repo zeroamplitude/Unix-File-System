@@ -161,6 +161,7 @@ public class JfsTest {
                     break;
 
                 case 'm': /* Create a new file */
+                    jfs = new JfsCreate();
                     System.out.println("Enter full path name of new" +
                             " file: ");
                     dataBuffer = in.nextLine();
