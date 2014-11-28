@@ -19,7 +19,9 @@
 
 package com.jfsfunctions;
 
+
 import com.jfsinternal.BlockIO;
+import com.jfsmemory.SystemFileTable;
 
 /**
  * @author Nicholas De Souza
