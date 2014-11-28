@@ -17,8 +17,6 @@
  * Copyright (c) 2014. Nicholas De Souza, Arun Gireesan, Milan Kornicer, Peter Little. All rights reserved
  */
 
-package com.jfstest.testsuit;
-
 import com.jfsinternal.BlockIO;
 
 /**
@@ -31,24 +29,24 @@ public class ReadRootTest {
 
         disk.getBlock(2, buffer);
 
-        String trial = "/";
-        byte[] t2b = trial.getBytes();
-
-        buffer[3] = t2b[0];
-
-        System.out.println(buffer.toString());
-
-
+//        String trial = "/";
+//        byte[] t2b = trial.getBytes();
+//
+//        buffer[3] = t2b[0];
+//
+//        //System.out.println(buffer.toString());
+//
+//
         byte status = buffer[0];
-
-        disk.putBlock(0, buffer);
+//
+//        disk.putBlock(0, buffer);
 
 
         short location = (byte) (((buffer[1] & 0x00ff) << 8)
                 + (buffer[2] & 0x00ff));
 
 
-        String name = new String(buffer, 3, 1);
+        String name = new String(buffer, 3, 6);
 
 
         short nextblk1 = (short) (((buffer[14] & 0x00ff) << 8)

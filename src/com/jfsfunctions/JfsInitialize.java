@@ -46,12 +46,12 @@ public class JfsInitialize extends JfsInterface {
             wipeDisk();
         }
 
-//        // Writes the SuperBlock to disk
-//        sb = new SuperBlock();
-//        error = writeSuperBlock();
-//        if (error == -1) {
-//            return -1;
-//        }
+        // Writes the SuperBlock to disk
+        sb = new SuperBlock();
+        error = writeSuperBlock();
+        if (error == -1) {
+            return -1;
+        }
 //
 //        // Sets iNode table zero's
 //        error = clearInodeTable();
@@ -132,15 +132,15 @@ public class JfsInitialize extends JfsInterface {
             return -1;
         }
 
-//        try {
-//            root.writeToBlock((short) 0xb);
-//        } catch (Exception e) {
-//            System.out.println("Disk write error "
-//                    + "@ INode.getRooted()." +
-//                    "writeToBlock(short blockNum): "
-//                    + e);
-//            return -1;
-//        }
+        try {
+            root.writeToBlock((short) 11);
+        } catch (Exception e) {
+            System.out.println("Disk write error "
+                    + "@ INode.getRooted()." +
+                    "writeToBlock(short blockNum): "
+                    + e);
+            return -1;
+        }
         return 0;
     }
 

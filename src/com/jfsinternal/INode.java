@@ -239,7 +239,7 @@ public class INode implements JfsInternalConstants{
         if(this.location == 0) {
             // If yes, a requests to the SuperBlock is made for a
             // free block
-            short freeBlock = (short) 15; //sb.getFreeBlock();
+            short freeBlock = (short) 11; //sb.getFreeBlock();
 
             // If the return value is a negative value, an error
             // message is displayed and the method returns -1
@@ -288,7 +288,7 @@ public class INode implements JfsInternalConstants{
         }
 
         // Clear the buffer
-        buffer = new byte[BLKSIZE];
+        byte[] byteBuffer = new byte[BLKSIZE];
 
 
         /*
@@ -298,81 +298,87 @@ public class INode implements JfsInternalConstants{
          */
 
         // Copy the status to buffer
-        buffer[0] = this.status;
+        byteBuffer[0] = this.status;
 
         // Copy the pointer to buffer
-        buffer[1] = (byte)(this.location >> 8);
-        buffer[2] = (byte)(this.location);
+        byteBuffer[1] = (byte) (this.location >> 8);
+        byteBuffer[2] = (byte) (this.location);
 
-        // Copy the name to buffer
-        byte[] nameBuf = name.getBytes();
+        // Copy the name to byteBuffer
+        byte[] nameBuf = this.name.getBytes();
+        System.out.println("name: " + this.name);
+        System.out.println("name: " + this.name.getBytes());
+        System.out.println("nameBuf" + nameBuf[0]);
         for(int i = 3; i < 9; i++) {
-            if (i < nameBuf.length) {
-                buffer[i] = nameBuf[0];
+            if (i - 3 < nameBuf.length) {
+                byteBuffer[i] = nameBuf[i - 3];
+                System.out.println("nameBuf.len: " + nameBuf.length);
+                System.out.println("If :" + nameBuf[i - 3]);
             } else {
-                buffer[i] = 0;
+                byteBuffer[i] = 0;
+                System.out.println("Else");
             }
         }
 
-        // Copy the Type to buffer
-        buffer[9] = (byte)(this.Type >> 8);
-        buffer[10] = (byte)(this.Type);
+        // Copy the Type to byteBuffer
+        byteBuffer[9] = (byte) (this.Type >> 8);
+        byteBuffer[10] = (byte) (this.Type);
 
-        // Copy the open file count to buffer
-        buffer[11] = (byte)(this.openCount >> 8);
-        buffer[12] = (byte)(this.openCount);
+        // Copy the open file count to byteBuffer
+        byteBuffer[11] = (byte) (this.openCount >> 8);
+        byteBuffer[12] = (byte) (this.openCount);
 
-        // Copy the iNumber to the buffer
-        buffer[13] = (byte)(this.iNumber >> 8);
-        buffer[14] = (byte)(this.iNumber);
+        // Copy the iNumber to the byteBuffer
+        byteBuffer[13] = (byte) (this.iNumber >> 8);
+        byteBuffer[14] = (byte) (this.iNumber);
 
-        // Copy the size of the file to buffer
-        buffer[15] = (byte)(this.size >> 8);
-        buffer[16] = (byte)(this.size);
+        // Copy the size of the file to byteBuffer
+        byteBuffer[15] = (byte) (this.size >> 8);
+        byteBuffer[16] = (byte) (this.size);
 
         // Sets a counter for the following copies
         int j = 17;
 
-        // Copy the creation date to buffer
+        // Copy the creation date to byteBuffer
         byte[] date = this.cdate.getBytes();
         for (int i = 0; i < date.length; i++) {
-            buffer[j] = date[i];
+            byteBuffer[j] = date[i];
             j++;
         }
 
-        // Copy the last access date to buffer
+        // Copy the last access date to byteBuffer
         date = this.adate.getBytes();
         for (int i = 0; i < date.length; i++) {
-            buffer[j] = date[i];
+            byteBuffer[j] = date[i];
             j++;
         }
 
-        // Copy the last modified date to buffer
+        // Copy the last modified date to byteBuffer
         date = this.mdate.getBytes();
         for (int i = 0; i < date.length; i++) {
-            buffer[j] = date[i];
+            byteBuffer[j] = date[i];
             j++;
         }
 
         // Copy the reference to the direct access
-        // blocks to buffer
+        // blocks to byteBuffer
         for (int i = 0; i < 12; i++) {
-            buffer[j] = (byte)(this.direct[i] >> 8);
-            buffer[j+1] = (byte)(this.direct[i]);
+            byteBuffer[j] = (byte) (this.direct[i] >> 8);
+            byteBuffer[j + 1] = (byte) (this.direct[i]);
             j += 2;
         }
 
         // Copy the reference to the indirect access
-        // block to buffer
-        buffer[j] = (byte)(this.indirect >> 8);
-        buffer[j+1] = (byte)(this.indirect);
+        // block to byteBuffer
+        byteBuffer[j] = (byte) (this.indirect >> 8);
+        byteBuffer[j + 1] = (byte) (this.indirect);
 
 
-        // Write the modified buffer back to the block
+        // Write the modified byteBuffer back to the block
         // If disk write error: catch exception, display error
         // and return -1
         try {
-            disk.putBlock(this.location, buffer);
+            disk.putBlock(this.location, byteBuffer);
         } catch (Exception e) {
             System.out.println("Disk write error "
                     + "@ INode.writeToTable(short iNumber): "
@@ -399,16 +405,16 @@ public class INode implements JfsInternalConstants{
         return 0;
     }
 
-//    /**
-//     * readFromBlock
-//     *      This method locates the iNode, specified by the
-//     *      iNumber, reads it from disk, caches it into memory.
-//     *
-//     * @param iNumber A short integer value that represents the
-//     *                index of an iNode in the iNodeTable.
-//     *
-//     * @return 0 on success, -1 on failure.
-//     */
+    /**
+     * readFromBlock
+     *      This method locates the iNode, specified by the
+     *      iNumber, reads it from disk, caches it into memory.
+     *
+     * @param iNumber A short integer value that represents the
+     *                index of an iNode in the iNodeTable.
+     *
+     * @return 0 on success, -1 on failure.
+     */
 //    public int readFromBlock(short iNumber) {
 //
 //        // Calculate the iNodeTable block position
@@ -464,7 +470,7 @@ public class INode implements JfsInternalConstants{
 //        return open.iNumber;
 //    }
 //
-//    public int readFromTable(String pathname) {
+////    public int readFromTable(String pathname) {
 //
 //
 //        return 0;

@@ -22,7 +22,8 @@ package com.jfsfunctions;
 /**
  * @author MILAN KORNICER
  */
-public abstract class JfsDelete implements JfsInterface {
+public abstract class JfsDelete extends JfsInterface {
+    @Override
     public int jfsDelete(String pathname) {
 
         /*
@@ -31,62 +32,62 @@ public abstract class JfsDelete implements JfsInterface {
         */
 
 
-        int inum = 0;
-        int fd = 0;
-        int type = 0;
-        int indexBlock = 0;
-
-        inum = traverse_file_sys(pathname); // this handles if the file exists or not
-        // returns -1 if the file doesn't exist or the actual inum which is > 0
-
-
-        if (inum > 0) {
-
-            type = getType(inum); // from inode
-
-            if (type == 1) {
-                // THIS IS A DIRECTORY MUST MAKE SURE THEY HAVE NO CHILDREN BEFORE DELETING
-
-
-            } else if (type == 0) {
-
-                // check if the file is open or not before deleting
-
-                fd = getFD(inum);
-                if (fd > 0) {
-                    // if the file is already open we need to close it b4 deleting
-
-                    remove(fd);
-
-                    indexBlock = getIndexBlock(inum);
-                    // remove everything that the inode is associated with
-                    // remove index block / and all data blocks
-                    // set all types to zero or null w.e.
-
-
-                } else {
-
-
-                    indexBlock = getIndexBlock(inum);
-                    // remove everything that the inode is associated with
-                    // remove index block / and all data blocks
-                    // set all types to zero or null w.e.
-
-
-                }
-
-
-            } else {
-                System.out.println("something went wrong");
-                return -1;
-            }
-
-        } else {
-
-            System.out.println("Could not delete the file");
-            return -1;
-
-        }
+//        int inum = 0;
+//        int fd = 0;
+//        int type = 0;
+//        int indexBlock = 0;
+//
+//        inum = traverse_file_sys(pathname); // this handles if the file exists or not
+//        // returns -1 if the file doesn't exist or the actual inum which is > 0
+//
+//
+//        if (inum > 0) {
+//
+//            type = getType(inum); // from inode
+//
+//            if (type == 1) {
+//                // THIS IS A DIRECTORY MUST MAKE SURE THEY HAVE NO CHILDREN BEFORE DELETING
+//
+//
+//            } else if (type == 0) {
+//
+//                // check if the file is open or not before deleting
+//
+//                fd = getFD(inum);
+//                if (fd > 0) {
+//                    // if the file is already open we need to close it b4 deleting
+//
+//                    remove(fd);
+//
+//                    indexBlock = getIndexBlock(inum);
+//                    // remove everything that the inode is associated with
+//                    // remove index block / and all data blocks
+//                    // set all types to zero or null w.e.
+//
+//
+//                } else {
+//
+//
+//                    indexBlock = getIndexBlock(inum);
+//                    // remove everything that the inode is associated with
+//                    // remove index block / and all data blocks
+//                    // set all types to zero or null w.e.
+//
+//
+//                }
+//
+//
+//            } else {
+//                System.out.println("something went wrong");
+//                return -1;
+//            }
+//
+//        } else {
+//
+//            System.out.println("Could not delete the file");
+//            return -1;
+//
+//        }
 
 
         return 0;

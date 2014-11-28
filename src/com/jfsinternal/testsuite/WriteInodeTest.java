@@ -17,8 +17,6 @@
  * Copyright (c) 2014. Nicholas De Souza, Arun Gireesan, Milan Kornicer, Peter Little. All rights reserved
  */
 
-package com.jfsinternal.testsuit;
-
 import com.jfsinternal.BlockIO;
 import com.jfsinternal.INode;
 import com.jfsinternal.JfsInternalConstants;

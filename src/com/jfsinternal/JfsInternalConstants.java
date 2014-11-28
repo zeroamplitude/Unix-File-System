@@ -34,6 +34,9 @@ public interface JfsInternalConstants {
     /* Number of files on disk */
     static final short NUMFILES = 64;
 
+    /* SuperBlock size in blocks */
+    static final short SUPERBLKSIZE = 11;
+
     /* Size of the iNode Table in blocks */
     static final short INODETBLSIZE = 8;
 

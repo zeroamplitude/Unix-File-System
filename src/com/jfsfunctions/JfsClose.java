@@ -20,7 +20,7 @@
 package com.jfsfunctions;
 
 
-public abstract class JfsClose implements JfsInterface {
+public abstract class JfsClose extends JfsInterface {
     public int jfsClose(int fd) {
 
         /*
@@ -37,20 +37,20 @@ public abstract class JfsClose implements JfsInterface {
 
 
         ####################################################
-*/
-        if (fd >= 0 && fd < MAX_FILES) // cant enter fd greater then 64 since this might cause an array out of bounds error
-        {
-            if (checkExists(fd) == -1) //checks if the file with fd association exists, returns 0 if everything is good
-            {
-                return -1; // in sfs_test once this returns -1 the file was not able to open
-
-            } else
-            {
-                remove(fd);
-                return 0; //(BACK TO SFS_TEST) if 0 FILE SUCCESSFULLY DELETED
-            }
-
-        }
+//*/
+//        if (fd >= 0 && fd < MAX_FILES) // cant enter fd greater then 64 since this might cause an array out of bounds error
+//        {
+//            if (checkExists(fd) == -1) //checks if the file with fd association exists, returns 0 if everything is good
+//            {
+//                return -1; // in sfs_test once this returns -1 the file was not able to open
+//
+//            } else
+//            {
+//                remove(fd);
+//                return 0; //(BACK TO SFS_TEST) if 0 FILE SUCCESSFULLY DELETED
+//            }
+//
+//        }
 
 
         return 0;
