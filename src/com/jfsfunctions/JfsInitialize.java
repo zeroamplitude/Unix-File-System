@@ -1,3 +1,22 @@
+/*
+ * This file is part of JavaFileSystem (jfs).
+ *
+ *     jfs is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     jfs is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with jfs.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright (c) 2014. Nicholas De Souza, Arun Gireesan, Milan Kornicer, Peter Little. All rights reserved
+ */
+
 package com.jfsfunctions;
 
 import com.jfsinternal.*;
@@ -15,6 +34,7 @@ public class JfsInitialize extends JfsInterface {
     /**
      * @param erase
      * @return 0 if successful, -1 on failure
+     * TODO: Needs Work
      */
     @Override
     public int jfsInitialize(int erase) {
@@ -73,7 +93,7 @@ public class JfsInitialize extends JfsInterface {
         return 0;
     }
     private int clearInodeTable() {
-        byte[] clear = new byte[sb.BLKSIZE];
+        byte[] clear = new byte[JfsInternalConstants.BLKSIZE];
         try {
             for (int i = 1; i <= sb.iNodeTable; i++) {
                 disk.putBlock((i + 1), clear);
