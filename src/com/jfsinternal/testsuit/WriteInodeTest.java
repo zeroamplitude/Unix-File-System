@@ -17,46 +17,39 @@
  * Copyright (c) 2014. Nicholas De Souza, Arun Gireesan, Milan Kornicer, Peter Little. All rights reserved
  */
 
-package com.jfstest.testsuit;
+package com.jfsinternal.testsuit;
 
 import com.jfsinternal.BlockIO;
+import com.jfsinternal.INode;
+import com.jfsinternal.JfsInternalConstants;
 
 /**
- * Created by nicholas on 26/11/14.
+ * Created by Nicholas De Souza on 27/11/14.
  */
-public class ReadRootTest {
+public class WriteInodeTest implements JfsInternalConstants {
     public static void main(String[] args) {
+
+        INode test = new INode("test", (short) 0);
+//        System.out.println(test.status);
+//        System.out.println(test.location);
+//        System.out.println(test.name);
+//        System.out.println(test.Type);
+
+
+        test.writeToTable((short) 0);
+
+
         BlockIO disk = new BlockIO();
-        byte[] buffer = new byte[128];
 
-        disk.getBlock(2, buffer);
+        byte[] buffer = new byte[BLKSIZE];
 
-        String trial = "/";
-        byte[] t2b = trial.getBytes();
+        disk.getBlock(0, buffer);
 
-        buffer[3] = t2b[0];
+        String test1 = new String(buffer, 3, 6);
 
-        System.out.println(buffer.toString());
+        System.out.println(test1);
 
-
-        byte status = buffer[0];
-
-        disk.putBlock(0, buffer);
-
-
-        short location = (byte) (((buffer[1] & 0x00ff) << 8)
-                + (buffer[2] & 0x00ff));
-
-
-        String name = new String(buffer, 3, 1);
-
-
-        short nextblk1 = (short) (((buffer[14] & 0x00ff) << 8)
-                + (buffer[15] & 0x00ff));
-
-        System.out.println(status);
-        System.out.println(location);
-        System.out.println(name);
-        System.out.println(nextblk1);
     }
+
+
 }

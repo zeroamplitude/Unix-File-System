@@ -27,7 +27,7 @@ import com.jfsinternal.*;
 public class JfsInitialize extends JfsInterface {
     private BlockIO disk;
     private SuperBlock sb;
-    private INode iNode;
+    private INode root;
     public DiskBitmap bitmap;
     int error = 0;
 
@@ -46,18 +46,18 @@ public class JfsInitialize extends JfsInterface {
             wipeDisk();
         }
 
-        // Writes the SuperBlock to disk
-        sb = new SuperBlock();
-        error = writeSuperBlock();
-        if (error == -1) {
-            return -1;
-        }
-
-        // Sets iNode table zero's
-        error = clearInodeTable();
-        if (error == -1) {
-            return -1;
-        }
+//        // Writes the SuperBlock to disk
+//        sb = new SuperBlock();
+//        error = writeSuperBlock();
+//        if (error == -1) {
+//            return -1;
+//        }
+//
+//        // Sets iNode table zero's
+//        error = clearInodeTable();
+//        if (error == -1) {
+//            return -1;
+//        }
 
         // Creates the root
         error = getRooted();
@@ -72,7 +72,7 @@ public class JfsInitialize extends JfsInterface {
     public int wipeDisk() {
         byte[] buffer = new byte[128];
         try {
-            for (int blocks = 0; blocks < 511; blocks++) {
+            for (int blocks = 0; blocks < 512; blocks++) {
                 for (int b = 0; b < 127; b++) {
                     buffer[b] = 0;
                 }
@@ -92,6 +92,7 @@ public class JfsInitialize extends JfsInterface {
         }
         return 0;
     }
+
     private int clearInodeTable() {
         byte[] clear = new byte[JfsInternalConstants.BLKSIZE];
         try {
@@ -115,10 +116,14 @@ public class JfsInitialize extends JfsInterface {
      */
     private int getRooted() {
 
+        // Intitialize root iNode
+        String rt = "/";
+        root = new INode(rt, (short) 0);
+
         // Calls writeToTable with iNumber value 0
         // If
         try {
-            iNode.writeToTable((short) 0);
+            root.writeToTable((short) 0);
         } catch (Exception e) {
             System.out.println("Disk write error "
                     + "@ INode.getRooted()." +
@@ -127,15 +132,15 @@ public class JfsInitialize extends JfsInterface {
             return -1;
         }
 
-        try {
-            iNode.writeToBlock((short) 11);
-        } catch (Exception e) {
-            System.out.println("Disk write error "
-                    + "@ INode.getRooted()." +
-                    "writeToBlock(short blockNum): "
-                    + e);
-            return -1;
-        }
+//        try {
+//            root.writeToBlock((short) 0xb);
+//        } catch (Exception e) {
+//            System.out.println("Disk write error "
+//                    + "@ INode.getRooted()." +
+//                    "writeToBlock(short blockNum): "
+//                    + e);
+//            return -1;
+//        }
         return 0;
     }
 
