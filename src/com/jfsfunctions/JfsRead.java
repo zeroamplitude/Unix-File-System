@@ -25,6 +25,88 @@ package com.jfsfunctions;
 public class JfsRead extends JfsInterface {
     @Override
     public int jfsRead(int fd, int start, int length, String mem_pointer) {
+
+
+        byte data = 0;
+        int startLoc = 0;
+        String allData = "";
+        if (fd >= 0 && fd < 64 && start >=0 && length > 0){
+
+            if (checkExists(fd) == 0) {
+                // means the file is in the table
+
+
+
+
+
+                int inum = systemOpenFile(fd);
+
+
+                // this function returns the inum of the associated file
+
+                /*
+                So now we have a fd, and the iNumber of the file in question (that needs to be read)
+
+                how does one access the inode and actually read /
+
+                ^^^^^^what method needs to be called?
+                 */
+                INode file = new INode();
+                //^^ that was used before
+
+                if (file.type == 1) {
+                    // THIS IS A DIRECTORY
+                    return -1;
+                }
+
+                 // using the function from INode that should read all the necessary information
+                allData = readFromBlock(inum);
+                System.out.println(allData);
+
+                // this could work in theory, but needs substaintially inode function work
+
+            } else {
+                // please open the file you wish to read first
+                return -1;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+        // invalid file descriptor OR reading from bad location
         return 0;
     }
 }

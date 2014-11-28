@@ -90,7 +90,7 @@ public class SystemFileTable {
     public int checkExists(int fd) {
         for (int i = 0; i < MAX_FILES; i++){
             if (bitmap[i] == 1){
-                if (inode_location[i]==fd) {
+                if (i==fd) {
                     return 0;
                 }
             }

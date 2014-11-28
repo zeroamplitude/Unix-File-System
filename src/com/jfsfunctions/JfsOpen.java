@@ -58,7 +58,7 @@ public abstract class JfsOpen implements JfsInterface {
         inum = traverse_file_sys(pathname); // this traverse file system should go through the whole file system and return the inode block
 
         if (inum == -1) {
-          send error that the disk location could not be read
+          //send error that the disk location could not be read
           return -1;
         } else {
          return addFile(inum) // this returns a FD which is used to immediately access the file that they just opened
