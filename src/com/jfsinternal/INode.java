@@ -20,6 +20,8 @@
 package com.jfsinternal;
 
 import java.util.Date;
+import java.util.StringTokenizer;
+
 import static java.lang.Math.floor;
 
 /**
@@ -432,9 +434,58 @@ public class INode implements JfsInternalConstants{
         return open.iNumber;
     }
 
-    public int readFromTable(String pathname) {
+    public INode readFromTable(String pathname) {
 
+        byte[] buffer = new byte[BLKSIZE];
 
-        return 0;
+        INode currNode;
+        disk.getBlock(0, buffer);
+        currNode = new INode(buffer);
+
+        if (buffer == null){
+            System.out.println("Disk read error "
+                    + "@ INode.readFromTable(String pathname): ");
+        }
+
+        String[] tokens = new String[64];
+        StringTokenizer tokenizer = new StringTokenizer(pathname, "\\");
+        int remainingTokens = tokenizer.countTokens();
+        int tokenCounter = 0;
+
+        while (remainingTokens > 0) {
+            tokens[tokenCounter] = tokenizer.nextToken();
+            remainingTokens --;
+            tokenCounter ++;
+        }
+
+        if (tokenCounter == 0){
+            System.out.println("ERROR: INVALID PATHNAME");
+            //return -1;
+        }
+
+        String fileName = tokens[tokenCounter - 1];
+        int blockNum = 1;
+
+        while (fileName != currNode.name) {
+            try {
+                disk.getBlock(blockNum, buffer);
+            } catch (Exception e) {
+                System.out.println("Disk read error "
+                        + "@ INode.readFromTable(String pathname): "
+                        + e);
+                //return -1;
+            }
+
+            try {
+                currNode = new INode(buffer);
+            } catch (Exception e) {
+                System.out.println("iNode open error "
+                        + "@ INode.readFromBlock(short iNumber)"
+                        + e);
+                //return -1;
+            }
+            blockNum ++;
+        }
+        return currNode;
     }
 }
