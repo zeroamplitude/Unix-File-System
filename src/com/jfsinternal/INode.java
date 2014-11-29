@@ -125,14 +125,10 @@ public class INode implements JfsInternalConstants{
         short block = (short) (floor((iNumber * INODESIZE)
                 / BLKSIZE) + INODETBLSTART);
 
-        System.out.print("Block: ");
-        System.out.println(block);
 
         // Calculate the offset inside the iNodeTable block
         short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
 
-        System.out.print("Offset : ");
-        System.out.println(offset);
 
         // Allocate a new buffer to store the block data
         byte[] buffer = new byte[BLKSIZE];
@@ -152,22 +148,13 @@ public class INode implements JfsInternalConstants{
         // Copy the status to buffer
         buffer[offset] = this.status;
 
-        System.out.print("Status: ");
-        System.out.println(buffer[offset]);
-
         // Copy the pointer to buffer
         buffer[offset+1] = (byte)(this.location >> 8);
         buffer[offset+2] = (byte)(this.location);
 
-        System.out.print("location: ");
-        System.out.println(buffer[offset + 1] + buffer[offset + 2]);
 
         // Copy the name to buffer
         byte[] nameBuf = this.name.getBytes();
-        System.out.print("nameBuf: ");
-        System.out.println(nameBuf.length);
-        System.out.print("name: ");
-        System.out.println(this.name.length());
 
 
         for(int i = 3; i < 9; i++) {
@@ -175,17 +162,11 @@ public class INode implements JfsInternalConstants{
 
                 buffer[offset+i] = nameBuf[i-3];
 
-                System.out.print("buffer: " + (offset + i) + " ");
-                System.out.println(buffer[offset + i]);
-                System.out.print("nameBuf: " + (i - 3) + " ");
-                System.out.println(nameBuf[i - 3]);
 
             } else {
 
                 buffer[offset+i] = 0;
 
-                System.out.print("buffer: " + (offset + i) + " ");
-                System.out.println(buffer[offset + i]);
 
             }
         }
@@ -306,17 +287,12 @@ public class INode implements JfsInternalConstants{
 
         // Copy the name to byteBuffer
         byte[] nameBuf = this.name.getBytes();
-        System.out.println("name: " + this.name);
-        System.out.println("name: " + this.name.getBytes());
-        System.out.println("nameBuf" + nameBuf[0]);
         for(int i = 3; i < 9; i++) {
             if (i - 3 < nameBuf.length) {
                 byteBuffer[i] = nameBuf[i - 3];
-                System.out.println("nameBuf.len: " + nameBuf.length);
-                System.out.println("If :" + nameBuf[i - 3]);
+
             } else {
                 byteBuffer[i] = 0;
-                System.out.println("Else");
             }
         }
 

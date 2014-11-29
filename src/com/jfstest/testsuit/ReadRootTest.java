@@ -22,8 +22,12 @@ import com.jfsinternal.BlockIO;
 /**
  * Created by nicholas on 26/11/14.
  */
-public class ReadRootTest {
-    public static void main(String[] args) {
+public class ReadRootTest
+
+{
+    public static void main(String[] args)
+
+    {
         BlockIO disk = new BlockIO();
         byte[] buffer = new byte[128];
 

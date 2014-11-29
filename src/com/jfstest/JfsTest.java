@@ -75,7 +75,10 @@ public class JfsTest {
         i = 0;
         retval=0;
 
-        while(true) {
+        while (true)
+
+        {
+
             System.out.println();
             System.out.println("o: open a file");
             System.out.println("r: read from a file");
@@ -90,6 +93,7 @@ public class JfsTest {
             System.out.println("q: quit - exit this program");
 
             System.out.println("<< Command >>");
+
             if ((cmdBuffer = (in.nextLine()).toCharArray()) == null) break;
 
             switch(cmdBuffer[0]) {

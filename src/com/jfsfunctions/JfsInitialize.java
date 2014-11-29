@@ -19,17 +19,20 @@
 
 package com.jfsfunctions;
 
-import com.jfsinternal.*;
+import com.jfsinternal.BlockIO;
+import com.jfsinternal.DiskBitmap;
+import com.jfsinternal.INode;
+import com.jfsinternal.SuperBlock;
 /**
  *
  * @author Nicholas De souza
  */
 public class JfsInitialize extends JfsInterface {
+    public DiskBitmap bitmap;
+    int error = 0;
     private BlockIO disk;
     private SuperBlock sb;
     private INode root;
-    public DiskBitmap bitmap;
-    int error = 0;
 
     /**
      * @param erase
@@ -49,6 +52,7 @@ public class JfsInitialize extends JfsInterface {
         // Writes the SuperBlock to disk
         sb = new SuperBlock();
         error = writeSuperBlock();
+
         if (error == -1) {
             return -1;
         }
@@ -86,21 +90,9 @@ public class JfsInitialize extends JfsInterface {
 
     private int writeSuperBlock() {
         try {
+            sb.makeFreeBlkList();
             sb.writeToDisk();
         } catch (Exception e) {
-            return -1;
-        }
-        return 0;
-    }
-
-    private int clearInodeTable() {
-        byte[] clear = new byte[JfsInternalConstants.BLKSIZE];
-        try {
-            for (int i = 1; i <= sb.iNodeTable; i++) {
-                disk.putBlock((i + 1), clear);
-            }
-        } catch (Exception e) {
-            System.out.println("Fatal error: Could not clear iNode table: " + e);
             return -1;
         }
         return 0;
@@ -141,8 +133,11 @@ public class JfsInitialize extends JfsInterface {
                     + e);
             return -1;
         }
+
+
         return 0;
     }
+
 
     //
 //        // Writes the disk bitmap to disk

@@ -57,7 +57,7 @@ public class JfsGetSize extends JfsInterface {
 //
 ////        int fileType = getInode(fileName).JfsGetType(pathname);
 ////
-////
+//
 ////
 ////            if (fileType == 0){ //is a directory
 ////                fileSize = getInode(fileName).getdirectAccess().size();

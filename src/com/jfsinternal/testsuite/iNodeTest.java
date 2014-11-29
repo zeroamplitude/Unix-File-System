@@ -3,9 +3,13 @@ import com.jfsinternal.BlockIO;
 /**
  * Created by nicholas on 22/11/14.
  */
-public class iNodeTest {
+public class iNodeTest
 
-    public static void main(String[] args) {
+{
+
+    public static void main(String[] args)
+
+    {
         BlockIO disk = new BlockIO();
 
         byte[] buffer = new byte[128];
