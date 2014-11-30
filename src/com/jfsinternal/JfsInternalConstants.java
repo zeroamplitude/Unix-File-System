@@ -37,13 +37,17 @@ public interface JfsInternalConstants {
     /* SuperBlock size in blocks */
     static final short SUPERBLKSIZE = 11;
 
+    static final short IMAP = 10;
+
     /* Size of the iNode Table in blocks */
     static final short INODETBLSIZE = 8;
 
     static final short INODETBLSTART = 2;
 
-    /* Size of an individual iNode */
-    static final short INODESIZE = INODETBLSIZE / NUMFILES;
+    static final short INODETBLBLKSIZE = 8;
+
+    /* Size of an individual iNode in the iNode table*/
+    static final short INODESIZE = 16;
 
     static final short NUMDIRECT = 12;
 

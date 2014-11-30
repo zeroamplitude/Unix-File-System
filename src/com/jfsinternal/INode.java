@@ -36,7 +36,8 @@ public class INode implements JfsInternalConstants{
     public String name;
     public short Type;
     protected short   openCount;
-    protected short   iNumber;
+    protected byte magic;
+    public short iNumber;
     protected short   size;
     protected String  cdate;
     protected String  adate;
@@ -45,29 +46,58 @@ public class INode implements JfsInternalConstants{
     protected short   indirect;
 
 
-//    public INode(byte[] buffer) {
-//        this.status = buffer[0];
-//        this.location = (short) (((buffer[1] & 0x00ff) << 8)
-//                + (buffer[2] & 0x00ff));
-//        this.name = new String(buffer, 3, 6);
-//        this.Type = (short) (((buffer[9] & 0x00ff) << 8)
-//                + (buffer[10] & 0x00ff));
-//        this.openCount = (short) (((buffer[11] & 0x00ff) << 8)
-//                + (buffer[12] & 0x00ff));
-//        this.iNumber = (short) (((buffer[13] & 0x00ff) << 8)
-//                + (buffer[14] & 0x00ff));
-//        this.size = (short) (((buffer[15] & 0x00ff) << 8)
-//                + (buffer[16] & 0x00ff));
-//        this.cdate = new String(buffer, 17, 10);
-//        this.adate = new String(buffer, 27, 10);
-//        this.mdate = new String(buffer, 37, 10);
-//        for (int i = 0; i < 12; i++) {
-//            this.direct[i] = (short) (((buffer[47+i] & 0x00ff) << 8)
-//                    + (buffer[47+i] & 0x00ff));
-//        }
-//        this.indirect = (short) (((buffer[58] & 0x00ff) << 8)
-//                + (buffer[58] & 0x00ff));
-//    }
+    public INode(short iNumber) {
+
+        byte[] buffer = new byte[BLKSIZE];
+
+        try {
+
+            sb.disk.getBlock(iNumber, buffer);
+            this.magic = 0;
+
+        } catch (Exception e) {
+
+            this.magic = -1;
+
+        }
+
+
+        this.status = buffer[0];
+
+        this.location = (short) (((buffer[1] & 0x00ff) << 8)
+                + (buffer[2] & 0x00ff));
+
+        this.name = new String(buffer, 3, 6);
+
+        this.Type = (short) (((buffer[9] & 0x00ff) << 8)
+                + (buffer[10] & 0x00ff));
+
+        this.openCount = (short) (((buffer[11] & 0x00ff) << 8)
+                + (buffer[12] & 0x00ff));
+
+        this.iNumber = (short) (((buffer[13] & 0x00ff) << 8)
+                + (buffer[14] & 0x00ff));
+
+        this.size = (short) (((buffer[15] & 0x00ff) << 8)
+                + (buffer[16] & 0x00ff));
+
+        this.cdate = new String(buffer, 17, 10);
+
+        this.adate = new String(buffer, 27, 10);
+
+        this.mdate = new String(buffer, 37, 10);
+
+        for (int i = 0; i < 12; i++) {
+
+            this.direct[i] = (short) (((buffer[47 + i] & 0x00ff) << 8)
+                    + (buffer[47 + i] & 0x00ff));
+        }
+
+        this.indirect = (short) (((buffer[58] & 0x00ff) << 8)
+                + (buffer[58] & 0x00ff));
+
+
+    }
 
 
     /**
@@ -86,13 +116,18 @@ public class INode implements JfsInternalConstants{
     public INode(String name, short Type) {
         this.status = (byte) 1;     // 1 byte
         this.location = 0;          // 2 bytes
+
         this.name = name;           // 6 bytes
         this.Type = Type;           // 0 if file, else 1
         this.openCount = 0;         // 2 bytes
                  // Total ITableNode: 13 bytes + R: 3 bytes = 16 bytes
         try {
-//            this.iNumber = sb.getFreeINode();
+
+            this.iNumber = sb.getFreeINode();
+
         } catch (Exception e) {
+
+            this.magic = -1;
 
         }
 
@@ -102,6 +137,8 @@ public class INode implements JfsInternalConstants{
         this.mdate = new Date().toString();
         this.direct = new short[12];
         this.indirect = 0;
+
+
     }
 
 
@@ -122,17 +159,10 @@ public class INode implements JfsInternalConstants{
     public int writeToTable(short iNumber) {
 
         // Calculate the iNodeTable block position
-        short block = (short) (floor((iNumber * INODESIZE)
-                / BLKSIZE) + INODETBLSTART);
-
-        System.out.print("Block: ");
-        System.out.println(block);
+        short block = (short) (floor(iNumber / INODETBLSIZE) + INODETBLSTART);
 
         // Calculate the offset inside the iNodeTable block
-        short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
-
-        System.out.print("Offset : ");
-        System.out.println(offset);
+        short offset = (short) ((iNumber % INODETBLSIZE) * INODESIZE);
 
         // Allocate a new buffer to store the block data
         byte[] buffer = new byte[BLKSIZE];
@@ -141,33 +171,28 @@ public class INode implements JfsInternalConstants{
         // If disk read error: catch exception, display error,
         // and return -1
         try {
+
             disk.getBlock(block, buffer);
+
         } catch (Exception e) {
+
             System.out.println("Disk read error "
                     + "@ INode.writeToTable(short iNumber)"
                     + e);
+
             return -1;
         }
 
         // Copy the status to buffer
         buffer[offset] = this.status;
 
-        System.out.print("Status: ");
-        System.out.println(buffer[offset]);
-
         // Copy the pointer to buffer
         buffer[offset+1] = (byte)(this.location >> 8);
         buffer[offset+2] = (byte)(this.location);
 
-        System.out.print("location: ");
-        System.out.println(buffer[offset + 1] + buffer[offset + 2]);
 
         // Copy the name to buffer
         byte[] nameBuf = this.name.getBytes();
-        System.out.print("nameBuf: ");
-        System.out.println(nameBuf.length);
-        System.out.print("name: ");
-        System.out.println(this.name.length());
 
 
         for(int i = 3; i < 9; i++) {
@@ -175,17 +200,11 @@ public class INode implements JfsInternalConstants{
 
                 buffer[offset+i] = nameBuf[i-3];
 
-                System.out.print("buffer: " + (offset + i) + " ");
-                System.out.println(buffer[offset + i]);
-                System.out.print("nameBuf: " + (i - 3) + " ");
-                System.out.println(nameBuf[i - 3]);
 
             } else {
 
                 buffer[offset+i] = 0;
 
-                System.out.print("buffer: " + (offset + i) + " ");
-                System.out.println(buffer[offset + i]);
 
             }
         }
@@ -306,17 +325,12 @@ public class INode implements JfsInternalConstants{
 
         // Copy the name to byteBuffer
         byte[] nameBuf = this.name.getBytes();
-        System.out.println("name: " + this.name);
-        System.out.println("name: " + this.name.getBytes());
-        System.out.println("nameBuf" + nameBuf[0]);
         for(int i = 3; i < 9; i++) {
             if (i - 3 < nameBuf.length) {
                 byteBuffer[i] = nameBuf[i - 3];
-                System.out.println("nameBuf.len: " + nameBuf.length);
-                System.out.println("If :" + nameBuf[i - 3]);
+
             } else {
                 byteBuffer[i] = 0;
-                System.out.println("Else");
             }
         }
 

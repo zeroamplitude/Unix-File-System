@@ -19,10 +19,23 @@
 
 package com.jfsfunctions;
 
+import com.jfsmemory.JfsMemory;
+
 /**
  * @author <<Fill in your name here>>
  */
-public abstract class JfsOpen extends JfsInterface {
+public class JfsOpen extends JfsInterface {
+
+    JfsMemory memory;
+
+
+    public JfsOpen(JfsMemory memory) {
+
+        this.memory = memory;
+
+    }
+
+
     @Override
     public int jfsOpen(String pathname) {
 //
