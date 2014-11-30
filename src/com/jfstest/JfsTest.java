@@ -68,7 +68,7 @@ public class JfsTest {
 
     public static int p1,p2,p3;
 
-    public static JfsMemory memory = new JfsMemory();
+    public static JfsMemory memory = JfsMemory.createJfsMemory();
 
     public static JfsInterface jfs;
 

@@ -50,7 +50,7 @@ public class JfsInitialize extends JfsInterface {
 
 
         memory.setSb(sb);
-
+        sb = memory.getSb();
 
         if (erase == 1) {
 
@@ -249,11 +249,13 @@ public class JfsInitialize extends JfsInterface {
      * @return 0 on success and -1 on failure
      */
     private int getRooted() {
-
-
-
         // Initialize root iNode
-        root = new INode("/", (short) 0);
+
+        short iNumber = sb.getFreeINode();
+
+        root = new INode("/", (short) 0, iNumber);
+        memory.setiNode(root);
+
 
         // Calls writeToTable with iNumber value 0
         // If

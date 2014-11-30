@@ -368,7 +368,7 @@ public class SuperBlock implements JfsInternalConstants {
 
     }
 
-    protected short getFreeINode() {
+    public short getFreeINode() {
 
         if (freeINodeCount == 0) {
             return -1;

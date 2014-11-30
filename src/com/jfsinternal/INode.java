@@ -26,7 +26,7 @@ import static java.lang.Math.floor;
 /**
  * Created by Nicholas De Souza on 26/11/14.
  */
-public class INode implements JfsInternalConstants{
+public class INode implements JfsInternalConstants {
 
     private BlockIO disk = new BlockIO();
     private SuperBlock  sb = new SuperBlock();
@@ -35,8 +35,8 @@ public class INode implements JfsInternalConstants{
     public short location;
     public String name;
     public short Type;
-    protected short   openCount;
-    protected byte magic;
+    protected short openCount;
+    public byte magic;
     public short iNumber;
     protected short   size;
     protected String  cdate;
@@ -113,7 +113,7 @@ public class INode implements JfsInternalConstants{
      *                 the iNodes type. 0 is a file, 1 is a
      *                 directory.
      */
-    public INode(String name, short Type) {
+    public INode(String name, short Type, short iNumber) {
         this.status = (byte) 1;     // 1 byte
         this.location = 0;          // 2 bytes
 
@@ -402,6 +402,7 @@ public class INode implements JfsInternalConstants{
         // If all operations successful return 0
         return 0;
     }
+
 
     /**
      * Expand

@@ -65,7 +65,7 @@ public class JfsClose extends JfsInterface {
 //
 //        }
 
-        memory.
+
         return 0;
     }
 }

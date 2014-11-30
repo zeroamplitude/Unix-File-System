@@ -19,9 +19,6 @@
 
 package com.jfsfunctions;
 
-import com.jfsinternal.INode;
-import com.jfsmemory.JfsDirectoryTree;
-
 /**
  * @author Nicholas De Souza
  *         <p/>
@@ -47,46 +44,34 @@ public class JfsCreate extends JfsInterface {
     @Override
     public int jfsCreate(String pathname, int type) {
 
-        // Initialize root iNode
-        new = new INode("/", (short) 0);
-
-        // Calls writeToTable with iNumber value 0
-        // If
-        try {
-
-            root.writeToTable((short) 0);
-
-            JfsDirectoryTree jfsDTree = new JfsDirectoryTree(root.name, root.iNumber);
-
-            memory.setJfsDirectoryTree(jfsDTree);
-
-        } catch (Exception e) {
-
-            System.out.println("Disk write error "
-                    + "@INode.getRooted()."
-                    + "writeToTable(short iNumber): "
-                    + e);
-
-            return -1;
-
-        }
-
-        try {
-
-            root.writeToBlock((short) 11);
-
-        } catch (Exception e) {
-
-            System.out.println("Disk write error "
-                    + "@ INode.getRooted()." +
-                    "writeToBlock(short blockNum): "
-                    + e);
-
-            return -1;
-
-        }
-
+//        s
+//        // Initialize root iNode
+//        //INode create = new INode(pathname, (short) type, );
+//
+//        if (create.magic < 0) {
+//            System.out.println("iNode creation error "
+//                    + "@JfsCreate(String pathname, int type)");
+//            return -1;
+//        }
+//
+//        // Calls writeToTable with iNumber value 0
+//        // If
+//        try {
+//
+//            create.writeToTable((short) 0);
+//
+//        } catch (Exception e) {
+//
+//            System.out.println("Disk write error "
+//                    + "@jfsCreate(String pathname, int type)."
+//                    + e);
+//
+//            return -1;
+//
+//        }
+//
         return 0;
+
     }
 
 }
