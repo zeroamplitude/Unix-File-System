@@ -101,45 +101,11 @@ public class SuperBlock implements JfsInternalConstants {
         freeINodeCount = 0;
         freeBlkCount = 0;
         freeBlkList = makeFreeBlkList();
-        freeInodeQueue = INODETBLSIZE;
+        freeInodeQueue = INODETBLSTART;
     }
 
     public short getMagic() {
         return magic;
-    }
-
-    public short updateINodeMap(short iNumber) {
-
-        byte[] emptyblock = new byte[BLKSIZE];
-
-        // Calculate the iNodeTable block position
-        short block = (short) (floor((iNumber * INODESIZE)
-                / BLKSIZE) + INODETBLSTART);
-
-
-        // Calculate the offset inside the iNodeTable block
-        short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
-
-
-        // Allocate a new buffer to store the block data
-        byte[] buffer = new byte[BLKSIZE];
-
-        // Read the iNodeTable block from disk
-        // If disk read error: catch exception, display error,
-        // and return -1
-        try {
-            disk.getBlock(block, buffer);
-        } catch (Exception e) {
-            System.out.println("Disk read error "
-                    + "@ INode.writeToTable(short iNumber)"
-                    + e);
-            return -1;
-        }
-
-
-        // Copy the pointer to buffer
-
-        return 0;
     }
 
     public int writeToDisk() {
@@ -196,7 +162,6 @@ public class SuperBlock implements JfsInternalConstants {
         int i = 0;
         for (int j = 0; j < (BLKSIZE / 2); j++) {
 
-            freeINodeCount += 1;
             if (j != 63) {
                 try {
 
@@ -204,43 +169,43 @@ public class SuperBlock implements JfsInternalConstants {
                     // buffer starting with child 11 block until 73.
                     block1[i] = (byte) ((SUPERBLKSIZE + j) >> 8);
                     block1[i + 1] = (byte) ((SUPERBLKSIZE + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer starting with child block 75 until 137.
                     block2[i] = (byte) ((SUPERBLKSIZE + 64 + j) >> 8);
                     block2[i + 1] = (byte) ((SUPERBLKSIZE + 64 + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer starting with the child block 139 until 201.
                     block3[i] = (byte) ((SUPERBLKSIZE + (64 * 2) + j) >> 8);
                     block3[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 2) + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer starting with the child block 203 until 265.
                     block4[i] = (byte) ((SUPERBLKSIZE + (64 * 3) + j) >> 8);
                     block4[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 3) + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer starting with the child block 267 until 329.
                     block5[i] = (byte) ((SUPERBLKSIZE + (64 * 4) + j) >> 8);
                     block5[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 4) + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer starting with the child block 331 until 393.
                     block6[i] = (byte) ((SUPERBLKSIZE + (64 * 5) + j) >> 8);
                     block6[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 5) + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     // Reads the location of the child block into
                     // buffer  starting with the child block 395 until 457.
                     block7[i] = (byte) ((SUPERBLKSIZE + (64 * 6) + j) >> 8);
                     block7[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 6) + j));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     if (j < 52) {
                         // If the index pointer is less than 52 which represents
@@ -249,7 +214,7 @@ public class SuperBlock implements JfsInternalConstants {
                         // 459 to 510
                         block8[i] = (byte) ((SUPERBLKSIZE + (64 * 7) + j) >> 8);
                         block8[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 7) + j));
-                        this.freeBlkList += 1;
+                        this.freeBlkCount += 1;
                     }
                 } catch (Exception e) {
                     System.out.println("Buffer read error: "
@@ -268,12 +233,11 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 138.
                     block1[i] = (byte) (((SUPERBLKSIZE + 64 * 2) - 1) >> 8);
                     block1[i + 1] = (byte) (((SUPERBLKSIZE + 64 * 2) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         // If
                         disk.putBlock(((SUPERBLKSIZE + 64) - 1), block1);
-                        this.freeBlkList = ((SUPERBLKSIZE + 64) - 1);
                     } catch (Exception e) {
                         System.out.println("1. Disk write error:"
                                 + "@SuperBlock.makeFreeInodeList()."
@@ -287,7 +251,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 202.
                     block2[i] = (byte) (((SUPERBLKSIZE + 64 * 3) - 1) >> 8);
                     block2[i + 1] = (byte) ((SUPERBLKSIZE + 64 * 3) - 1);
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         disk.putBlock((SUPERBLKSIZE + (2 * 64) - 1), block2);
@@ -303,7 +267,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 266.
                     block3[i] = (byte) ((SUPERBLKSIZE + (64 * 4) - 1) >> 8);
                     block3[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 4) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         disk.putBlock((SUPERBLKSIZE + (3 * 64) - 1), block3);
@@ -319,7 +283,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 330.
                     block4[i] = (byte) ((SUPERBLKSIZE + (64 * 5) - 1) >> 8);
                     block4[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 5) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         disk.putBlock((SUPERBLKSIZE + (4 * 64) - 1), block4);
@@ -336,7 +300,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 394.
                     block5[i] = (byte) ((SUPERBLKSIZE + (64 * 6) - 1) >> 8);
                     block5[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 6) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
                     try {
                         disk.putBlock((SUPERBLKSIZE + (5 * 64) - 1), block5);
                     } catch (Exception e) {
@@ -350,7 +314,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 458.
                     block6[i] = (byte) ((SUPERBLKSIZE + (64 * 7) - 1) >> 8);
                     block6[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 7) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         disk.putBlock((SUPERBLKSIZE + (6 * 64) - 1), block6);
@@ -365,7 +329,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // FreeBlockHead, which is located at block 511.
                     block7[i] = (byte) ((SUPERBLKSIZE + (64 * 8) - 1) >> 8);
                     block7[i + 1] = (byte) ((SUPERBLKSIZE + (64 * 8) - 1));
-                    this.freeBlkList += 1;
+                    this.freeBlkCount += 1;
 
                     try {
                         disk.putBlock((SUPERBLKSIZE + (7 * 64) - 1), block7);
@@ -380,7 +344,7 @@ public class SuperBlock implements JfsInternalConstants {
                     // in block number 511
                     try {
                         disk.putBlock(((8 * 64) - 1), block8);
-                        this.freeBlkList += 1;
+                        this.freeBlkCount += 1;
                     } catch (Exception e) {
                         System.out.println("8. Disk write error:"
                                 + "@SuperBlock.makeFreeInodeList()."
@@ -400,10 +364,9 @@ public class SuperBlock implements JfsInternalConstants {
             i += 2;
         }
 
+        return ((SUPERBLKSIZE + 64) - 1);
 
-        return 0;
     }
-
 
     protected short getFreeINode() {
 
@@ -444,7 +407,6 @@ public class SuperBlock implements JfsInternalConstants {
         return 0;
     }
 
-
     public int diskBitMap(DiskBitmap bitmap) {
         byte[] encoded = new byte[BLKSIZE];
         int i = 0;
@@ -469,4 +431,37 @@ public class SuperBlock implements JfsInternalConstants {
         return 0;
     }
 
+    public short updateINodeMap(short iNumber) {
+
+        byte[] emptyblock = new byte[BLKSIZE];
+
+        // Calculate the iNodeTable block position
+        short block = (short) (floor((iNumber * INODESIZE)
+                / BLKSIZE) + INODETBLSTART);
+
+
+        // Calculate the offset inside the iNodeTable block
+        short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
+
+
+        // Allocate a new buffer to store the block data
+        byte[] buffer = new byte[BLKSIZE];
+
+        // Read the iNodeTable block from disk
+        // If disk read error: catch exception, display error,
+        // and return -1
+        try {
+            disk.getBlock(block, buffer);
+        } catch (Exception e) {
+            System.out.println("Disk read error "
+                    + "@ INode.writeToTable(short iNumber)"
+                    + e);
+            return -1;
+        }
+
+
+        // Copy the pointer to buffer
+
+        return 0;
+    }
 }

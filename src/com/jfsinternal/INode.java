@@ -124,6 +124,7 @@ public class INode implements JfsInternalConstants{
         try {
 
             this.iNumber = sb.getFreeINode();
+            this.magic = 0;
 
         } catch (Exception e) {
 
@@ -137,8 +138,6 @@ public class INode implements JfsInternalConstants{
         this.mdate = new Date().toString();
         this.direct = new short[12];
         this.indirect = 0;
-
-
     }
 
 

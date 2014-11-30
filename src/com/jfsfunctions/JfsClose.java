@@ -20,7 +20,20 @@
 package com.jfsfunctions;
 
 
-public abstract class JfsClose extends JfsInterface {
+import com.jfsmemory.JfsMemory;
+
+public class JfsClose extends JfsInterface {
+
+    public JfsMemory memory;
+
+    public JfsClose(JfsMemory memory) {
+
+        this.memory = memory;
+
+    }
+
+
+    @Override
     public int jfsClose(int fd) {
 
         /*
@@ -52,7 +65,7 @@ public abstract class JfsClose extends JfsInterface {
 //
 //        }
 
-
+        memory.
         return 0;
     }
 }

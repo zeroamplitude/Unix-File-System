@@ -20,6 +20,7 @@
 package com.jfsfunctions;
 
 import com.jfsinternal.INode;
+import com.jfsmemory.JfsDirectoryTree;
 
 /**
  * @author Nicholas De Souza
@@ -46,21 +47,44 @@ public class JfsCreate extends JfsInterface {
     @Override
     public int jfsCreate(String pathname, int type) {
 
-        short Type = (short) type;
+        // Initialize root iNode
+        new = new INode("/", (short) 0);
 
-        String path = pathname;
-        String delims = "/";
-        String[] pathTok = path.split(delims);
+        // Calls writeToTable with iNumber value 0
+        // If
+        try {
 
-        INode create = new INode(path, Type);
+            root.writeToTable((short) 0);
 
-        int i = 0;
-        while (i < pathTok.length) {
+            JfsDirectoryTree jfsDTree = new JfsDirectoryTree(root.name, root.iNumber);
 
+            memory.setJfsDirectoryTree(jfsDTree);
 
+        } catch (Exception e) {
+
+            System.out.println("Disk write error "
+                    + "@INode.getRooted()."
+                    + "writeToTable(short iNumber): "
+                    + e);
+
+            return -1;
 
         }
 
+        try {
+
+            root.writeToBlock((short) 11);
+
+        } catch (Exception e) {
+
+            System.out.println("Disk write error "
+                    + "@ INode.getRooted()." +
+                    "writeToBlock(short blockNum): "
+                    + e);
+
+            return -1;
+
+        }
 
         return 0;
     }

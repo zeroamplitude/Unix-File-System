@@ -14,14 +14,19 @@ public class JfsDirectoryTree {
     }
 
     public void traverseTree(String path) {
+        if (path.equals("/")) {
 
-        String[] tokens = path.split("/");
+            System.out.print("ROOT");
 
-        JfsDirectoryNode current = root.search(tokens, 0);
+        } else {
 
-        if (current.name.equals("ERROR")) {
+            String[] tokens = path.split("/");
 
-            System.out.println("Error");
+            JfsDirectoryNode current = root.search(tokens, 1);
+
+            if (current.name.equals("ERROR")) {
+                System.out.println("Error");
+            }
 
         }
 

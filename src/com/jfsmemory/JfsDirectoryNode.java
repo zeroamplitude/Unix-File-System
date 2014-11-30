@@ -5,11 +5,13 @@ import java.util.HashMap;
 /**
  * Created by Nicholas De Souza on 29/11/14.
  */
-public class JfsDirectoryNode {
+public class JfsDirectoryNode
 
-    String name;
-    short iNumber;
-    HashMap<String, JfsDirectoryNode> child;
+{
+
+    public String name;
+    public short iNumber;
+    public HashMap<String, JfsDirectoryNode> child;
 
     public JfsDirectoryNode(String name, short iNumber) {
         this.name = name;
@@ -33,14 +35,14 @@ public class JfsDirectoryNode {
 
         JfsDirectoryNode error = new JfsDirectoryNode("ERROR", (short) 0);
 
-        if (cur == (tokens.length - 2) && child.containsKey(tokens[cur])) {
+        if (cur == (tokens.length - 1) && child.containsKey(tokens[cur])) {
 
             return child.get(tokens[cur]);
 
         } else if (child.containsKey(tokens[cur])) {
 
             cur += 1;
-            return child.get(tokens[cur]).search(tokens, cur);
+            return child.get(tokens[cur - 1]).search(tokens, cur);
 
         } else {
 
