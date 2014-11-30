@@ -19,15 +19,23 @@
 
 package com.jfsfunctions;
 
+import com.jfsinternal.INode;
+import com.jfsmemory.JfsMemory;
+
 /**
  * @author Nicholas De Souza
- *         <p/>
- *         TODO: Improve disk access by reading iNode Table to memory
+ *
  */
 public class JfsCreate extends JfsInterface {
 
     private static final int NUMFILES = 64;
     private static final int BLKSIZE = 128;
+    private JfsMemory memory;
+
+
+    public JfsCreate(JfsMemory memory) {
+        this.memory = memory;
+    }
 
     /**
      * jfsCreate:
@@ -39,37 +47,23 @@ public class JfsCreate extends JfsInterface {
      * @param pathname
      * @param type
      * @return
-     * TODO: Merge all functions into one
      */
     @Override
     public int jfsCreate(String pathname, int type) {
 
-//        s
-//        // Initialize root iNode
-//        //INode create = new INode(pathname, (short) type, );
-//
-//        if (create.magic < 0) {
-//            System.out.println("iNode creation error "
-//                    + "@JfsCreate(String pathname, int type)");
-//            return -1;
-//        }
-//
-//        // Calls writeToTable with iNumber value 0
-//        // If
-//        try {
-//
-//            create.writeToTable((short) 0);
-//
-//        } catch (Exception e) {
-//
-//            System.out.println("Disk write error "
-//                    + "@jfsCreate(String pathname, int type)."
-//                    + e);
-//
-//            return -1;
-//
-//        }
-//
+        String[] tokens = pathname.split("/");
+
+        // Initialize root iNode
+        INode create = new INode(tokens, (short) type);
+
+        if (create.getMagic() < 0) {
+
+            System.out.println("iNode creation error "
+                    + "@JfsCreate(String pathname, int type)");
+            return -1;
+
+        }
+
         return 0;
 
     }

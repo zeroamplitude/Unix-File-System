@@ -68,7 +68,7 @@ public class JfsTest {
 
     public static int p1,p2,p3;
 
-    public static JfsMemory memory = JfsMemory.createJfsMemory();
+    public static JfsMemory memory = JfsMemory.getInstance();
 
     public static JfsInterface jfs;
 
@@ -185,7 +185,7 @@ public class JfsTest {
                         break;
 
                     case 'm': /* Create a new file */
-                        jfs = new JfsCreate();
+                        jfs = new JfsCreate(memory);
                         System.out.println("Enter full path name of new" +
                                 " file: ");
                         dataBuffer = in.nextLine();

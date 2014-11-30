@@ -27,14 +27,14 @@ import com.jfsinternal.JfsInternalConstants;
 public class WriteInodeTest implements JfsInternalConstants {
     public static void main(String[] args) {
 
-        INode test = new INode("test", (short) 0, (short) 2);
+        INode test = new INode("test");
 //        System.out.println(test.status);
 //        System.out.println(test.location);
 //        System.out.println(test.name);
 //        System.out.println(test.Type);
 
 
-        test.writeToTable((short) 0);
+        //test.writeToTable((short) 0);
 
 
         BlockIO disk = new BlockIO();

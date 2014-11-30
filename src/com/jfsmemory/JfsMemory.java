@@ -14,19 +14,18 @@ public class JfsMemory {
     public SystemFileTable sft;
     public JfsDirectoryTree jfsDirectoryTree;
 
+    private static JfsMemory memory = new JfsMemory();
 
     private JfsMemory() {
-
-        sb = null;
-        iNode = null;
-        sft = null;
-        jfsDirectoryTree = null;
-
     }
 
-    public static JfsMemory createJfsMemory() {
-        return new JfsMemory();
+    public static JfsMemory getInstance() {
+        return memory;
     }
+
+//    public static JfsMemory createJfsMemory() {
+//        return new JfsMemory();
+//    }
 
     public void setSb(SuperBlock sb) {
 

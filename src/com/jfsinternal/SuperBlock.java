@@ -19,6 +19,8 @@
 
 package com.jfsinternal;
 
+import com.jfsmemory.JfsMemory;
+
 import static java.lang.Math.floor;
 
 /**
@@ -31,8 +33,8 @@ import static java.lang.Math.floor;
 public class SuperBlock implements JfsInternalConstants {
     byte[] bitmap = new byte[NUMBLKS];
     byte[] iMap = new byte[BLKSIZE];
-    byte[] sbBuffer = new byte[BLKSIZE];
     public BlockIO disk = new BlockIO();
+    JfsMemory memory = JfsMemory.getInstance();
 
     short magic;
     private short diskSize;
@@ -98,7 +100,7 @@ public class SuperBlock implements JfsInternalConstants {
         blockSize = BLKSIZE;
         iNodeTable = INODETBLSTART;
         iNodeCount = NUMFILES;
-        freeINodeCount = 0;
+        freeINodeCount = NUMFILES;
         freeBlkCount = 0;
         freeBlkList = makeFreeBlkList();
         freeInodeQueue = INODETBLSTART;
@@ -378,21 +380,23 @@ public class SuperBlock implements JfsInternalConstants {
 
             disk.getBlock(freeInodeQueue, buffer);
 
+            int j = 0;
             for (short i = 0; i < INODETBLSIZE; i++) {
 
-                if ((buffer[i] == (byte) 0) && i == 7) {
+                if ((buffer[j] == (byte) 0) && i == 7) {
 
                     freeInodeQueue++;
                     freeINodeCount--;
 
                     return (short) (i + (((freeInodeQueue - 1) - INODETBLSTART) * INODETBLSIZE));
 
-                } else if (buffer[i] == (byte) 0) {
+                } else if (buffer[j] == (byte) 0) {
 
                     freeINodeCount--;
                     return (short) (i + (freeInodeQueue - INODETBLSTART) * INODETBLSIZE);
 
                 }
+                j += 16;
 
             }
 
@@ -402,8 +406,55 @@ public class SuperBlock implements JfsInternalConstants {
 
     }
 
+    public short getFreeBlock() {
+        if (freeBlkCount == 0) {
+            return -1;
+        } else {
+
+            byte[] buffer = new byte[BLKSIZE];
+
+            disk.getBlock(freeBlkList, buffer);
+
+            for (short i = 0; i < BLKSIZE; i += 2) {
+
+                short freeBlk = (short) (((buffer[i] & 0x00ff) << 8)
+                        + (buffer[i + 1] & 0x00ff));
+
+                if ((freeBlk != 0) && i == 124) {
+
+                    short nextFreeBlkHead = (short) (((buffer[i + 2] & 0x00ff) << 8)
+                            + (buffer[i + 3] & 0x00ff));
+
+                    freeBlkList = nextFreeBlkHead;
+                    freeBlkCount--;
+
+                    return freeBlk;
+
+                } else if (freeBlk != (byte) 0) {
+                    buffer[i] = (byte) 0;
+                    buffer[i + 1] = (byte) 0;
+
+                    try {
+                        disk.putBlock(freeBlkList, buffer);
+                    } catch (Exception e) {
+                        System.out.println("Disk write errror"
+                                + e);
+                        return -1;
+                    }
+
+                    freeBlkCount--;
+                    return freeBlk;
+
+                }
+            }
+
+            return -1;
+
+        }
+    }
+
     public int checkiMap() {
-        disk.getBlock(IMAP, sbBuffer);
+        // disk.getBlock(IMAP, sbBuffer);
         return 0;
     }
 

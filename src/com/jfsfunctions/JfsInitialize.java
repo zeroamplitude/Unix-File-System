@@ -33,6 +33,7 @@ public class JfsInitialize extends JfsInterface {
     private SuperBlock sb;
     private INode root;
     private JfsMemory memory;
+    private JfsDirectoryTree dt;
     int error = 0;
 
     public JfsInitialize(JfsMemory memory) {
@@ -47,10 +48,6 @@ public class JfsInitialize extends JfsInterface {
      */
     @Override
     public int jfsInitialize(int erase) {
-
-
-        memory.setSb(sb);
-        sb = memory.getSb();
 
         if (erase == 1) {
 
@@ -79,7 +76,8 @@ public class JfsInitialize extends JfsInterface {
 
         } else {
 
-            SuperBlock ssb = new SuperBlock();
+            sb = new SuperBlock((short) 1);
+            memory.setSb(sb);
             /* Read SuperBlock */
             if (sb.getMagic() == -1) {
                 return -1;
@@ -196,7 +194,8 @@ public class JfsInitialize extends JfsInterface {
      * @return 0 on success, -1 on failure
      */
     private int writeSuperBlock() {
-
+        sb = new SuperBlock();
+        memory.setSb(sb);
         try {
 
             sb.writeToDisk();
@@ -251,50 +250,13 @@ public class JfsInitialize extends JfsInterface {
     private int getRooted() {
         // Initialize root iNode
 
-        short iNumber = sb.getFreeINode();
-
-        root = new INode("/", (short) 0, iNumber);
-        memory.setiNode(root);
-
-
-        // Calls writeToTable with iNumber value 0
-        // If
-        try {
-
-            root.writeToTable((short) 0);
-
-            JfsDirectoryTree jfsDTree = new JfsDirectoryTree(root.name, root.iNumber);
-
-            memory.setJfsDirectoryTree(jfsDTree);
-
-        } catch (Exception e) {
-
-            System.out.println("Disk write error "
-                    + "@INode.getRooted()."
-                    + "writeToTable(short iNumber): "
-                    + e);
-
+        root = new INode("/");
+        if (root.getMagic() < 0) {
+            System.out.println("Error constructing iNode");
             return -1;
-
-        }
-
-        try {
-
-            root.writeToBlock((short) 11);
-
-        } catch (Exception e) {
-
-            System.out.println("Disk write error "
-                    + "@ INode.getRooted()." +
-                    "writeToBlock(short blockNum): "
-                    + e);
-
-            return -1;
-
         }
 
         return 0;
-
     }
 
 }

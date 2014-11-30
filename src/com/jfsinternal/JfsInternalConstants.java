@@ -62,5 +62,4 @@ public interface JfsInternalConstants {
         FILE,
         DIRECTORY
     }
-
 }

@@ -19,6 +19,9 @@
 
 package com.jfsinternal;
 
+import com.jfsmemory.JfsDirectoryTree;
+import com.jfsmemory.JfsMemory;
+
 import java.util.Date;
 
 import static java.lang.Math.floor;
@@ -27,25 +30,138 @@ import static java.lang.Math.floor;
  * Created by Nicholas De Souza on 26/11/14.
  */
 public class INode implements JfsInternalConstants {
+    private JfsMemory memory = JfsMemory.getInstance();
+    private SuperBlock sb = memory.getSb();
+    private JfsDirectoryTree dt;
 
-    private BlockIO disk = new BlockIO();
-    private SuperBlock  sb = new SuperBlock();
+    protected int magic;
 
-    public byte status;
-    public short location;
-    public String name;
-    public short Type;
-    protected short openCount;
-    public byte magic;
-    public short iNumber;
-    protected short   size;
-    protected String  cdate;
-    protected String  adate;
-    protected String  mdate;
-    protected short   direct[];
-    protected short   indirect;
+    private byte status;
+    private short location;
+    private String name;
+    private short type;
+    private short openCount;
+    private short iNumber;
+    private short size;
+    private String cdate;
+    private String adate;
+    private String mdate;
+    private short direct[];
+    private short indirect;
 
 
+    public INode(String root) {
+        this.status = (byte) 1;     // 1 byte
+        this.location = sb.getFreeBlock();          // 2 bytes
+        this.name = root;           // 6 bytes
+        this.type = 1;   // 0 if file, else 1
+        this.openCount = 0;         // 2 bytes
+
+        try {
+            this.iNumber = sb.getFreeINode();
+            this.magic = 0;
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+
+        this.size = 0;
+        this.cdate = new Date().toString();
+        this.adate = new Date().toString();
+        this.mdate = new Date().toString();
+        this.direct = new short[12];
+        this.indirect = 0;
+
+        // On verification that the iNode was
+        // constructed it will write the iNode
+        // to the iNode table.
+        if (this.magic == 0) {
+            magic = writeToTable(this.iNumber);
+        }
+
+        // If this iNode is a directory it will
+        // create an iNode block on disk.
+        if (this.magic == 0 && this.type == 1) {
+            magic = writeToBlock(this.iNumber);
+        }
+
+        if (magic == 0) {
+            dt = new JfsDirectoryTree(this.name, this.iNumber);
+            memory.setJfsDirectoryTree(dt);
+        }
+
+    }
+
+    /**
+     * INode Constructor
+     * This is the first constructor of an iNode when
+     * a file is creates. This will set the values of
+     * the iNode in the iNode table.
+     *
+     * @param name A 6 character string value that repr-
+     *             esnts the name of the file.
+     * @param type A short integer value that represents
+     *             the iNodes type. 0 is a file, 1 is a
+     *             directory.
+     */
+    public INode(String[] name, int type) {
+        this.status = (byte) 1;     // 1 byte
+
+        if (type == 1) {
+            this.location = sb.getFreeBlock();          // 2 bytes
+        } else {
+            this.location = 0;
+        }
+
+        this.name = name[name.length - 1];           // 6 bytes
+        this.type = (short) type;   // 0 if file, else 1
+        this.openCount = 0;         // 2 bytes
+
+        try {
+
+            this.iNumber = sb.getFreeINode();
+            this.magic = 0;
+
+        } catch (Exception e) {
+
+            this.magic = -1;
+
+        }
+
+        this.size = 0;
+        this.cdate = new Date().toString();
+        this.adate = new Date().toString();
+        this.mdate = new Date().toString();
+        this.direct = new short[12];
+        this.indirect = 0;
+
+        // On verification that the iNode was
+        // constructed it will write the iNode
+        // to the iNode table.
+        if (this.magic == 0) {
+            magic = writeToTable(this.iNumber);
+        }
+
+        // If this iNode is a directory it will
+        // create an iNode block on disk.
+        if (this.magic == 0 && this.type == 1) {
+            magic = writeToBlock(this.iNumber);
+        }
+
+        if (magic == 0) {
+            memory.getJfsDirectoryTree();
+            magic = dt.updateDirectoryTree(name, this.iNumber);
+        }
+
+    }
+
+    /**
+     * INode Constructor
+     * This will construct and INode by reading it
+     * from disk.
+     *
+     * @param iNumber An integer representing the value of
+     *                the iNodes location in the iNode table
+     */
     public INode(short iNumber) {
 
         byte[] buffer = new byte[BLKSIZE];
@@ -69,7 +185,7 @@ public class INode implements JfsInternalConstants {
 
         this.name = new String(buffer, 3, 6);
 
-        this.Type = (short) (((buffer[9] & 0x00ff) << 8)
+        this.type = (short) (((buffer[9] & 0x00ff) << 8)
                 + (buffer[10] & 0x00ff));
 
         this.openCount = (short) (((buffer[11] & 0x00ff) << 8)
@@ -99,47 +215,9 @@ public class INode implements JfsInternalConstants {
 
     }
 
-
-    /**
-     * INode Constructor
-     *      This is the first constructor of an iNode when
-     *      a file is creates. This will set the values of
-     *      the iNode in the iNode table.
-     *
-     * @param name      A 6 character string value that repr-
-     *                  esnts the name of the file.
-     *
-     * @param Type     A short integer value that represents
-     *                 the iNodes type. 0 is a file, 1 is a
-     *                 directory.
-     */
-    public INode(String name, short Type, short iNumber) {
-        this.status = (byte) 1;     // 1 byte
-        this.location = 0;          // 2 bytes
-
-        this.name = name;           // 6 bytes
-        this.Type = Type;           // 0 if file, else 1
-        this.openCount = 0;         // 2 bytes
-                 // Total ITableNode: 13 bytes + R: 3 bytes = 16 bytes
-        try {
-
-            this.iNumber = sb.getFreeINode();
-            this.magic = 0;
-
-        } catch (Exception e) {
-
-            this.magic = -1;
-
-        }
-
-        this.size = 0;
-        this.cdate = new Date().toString();
-        this.adate = new Date().toString();
-        this.mdate = new Date().toString();
-        this.direct = new short[12];
-        this.indirect = 0;
+    public int getMagic() {
+        return magic;
     }
-
 
     /**
      * writeToTable
@@ -155,14 +233,11 @@ public class INode implements JfsInternalConstants {
      *
      * @return 0 on success and -1 on failure.
      */
-    public int writeToTable(short iNumber) {
-
+    private int writeToTable(short iNumber) {
         // Calculate the iNodeTable block position
         short block = (short) (floor(iNumber / INODETBLSIZE) + INODETBLSTART);
-
         // Calculate the offset inside the iNodeTable block
         short offset = (short) ((iNumber % INODETBLSIZE) * INODESIZE);
-
         // Allocate a new buffer to store the block data
         byte[] buffer = new byte[BLKSIZE];
 
@@ -170,65 +245,45 @@ public class INode implements JfsInternalConstants {
         // If disk read error: catch exception, display error,
         // and return -1
         try {
-
-            disk.getBlock(block, buffer);
-
+            sb.disk.getBlock(block, buffer);
         } catch (Exception e) {
-
             System.out.println("Disk read error "
                     + "@ INode.writeToTable(short iNumber)"
                     + e);
-
             return -1;
         }
 
         // Copy the status to buffer
         buffer[offset] = this.status;
-
         // Copy the pointer to buffer
         buffer[offset+1] = (byte)(this.location >> 8);
         buffer[offset+2] = (byte)(this.location);
-
-
         // Copy the name to buffer
         byte[] nameBuf = this.name.getBytes();
-
-
         for(int i = 3; i < 9; i++) {
             if (i < nameBuf.length + 3) {
-
                 buffer[offset+i] = nameBuf[i-3];
-
-
             } else {
-
                 buffer[offset+i] = 0;
-
-
             }
         }
-
-
         // Copy the Type to buffer
-        buffer[offset+9] = (byte)(this.Type >> 8);
-        buffer[offset+10] = (byte)(this.Type);
-
+        buffer[offset+9] = (byte)(this.type >> 8);
+        buffer[offset + 10] = (byte) (this.type);
         // Copy the open count to buffer
         buffer[offset+11] = (byte)(this.openCount >> 8);
         buffer[offset+12] = (byte)(this.openCount);
-
         // Write the modified buffer back to the block
         // If disk write error: catch exception, display error
         // and return -1
         try {
-            disk.putBlock(block, buffer);
+            sb.disk.putBlock(block, buffer);
         } catch (Exception e) {
             System.out.println("Disk write error "
                     + "@ INode.writeToTable(short iNumber): "
                     + e);
             return -1;
         }
-
         // If all operations successful return 0
         return 0;
     }
@@ -248,7 +303,7 @@ public class INode implements JfsInternalConstants {
      *
      * @return 0 on success, -1 on failure.
      */
-    public int writeToBlock(short iNumber) {
+    private int writeToBlock(short iNumber) {
 
         // Allocate a new buffer to store the block data
         byte[] buffer = new byte[BLKSIZE];
@@ -257,7 +312,7 @@ public class INode implements JfsInternalConstants {
         if(this.location == 0) {
             // If yes, a requests to the SuperBlock is made for a
             // free block
-            short freeBlock = (short) 11; //sb.getFreeBlock();
+            short freeBlock = sb.getFreeBlock();
 
             // If the return value is a negative value, an error
             // message is displayed and the method returns -1
@@ -269,37 +324,10 @@ public class INode implements JfsInternalConstants {
             // Sets location to point to the free block
             this.location = freeBlock;
 
-            // Calculate the iNodeTable block position
-            short block = (short) (floor((iNumber * INODESIZE)
-                    / BLKSIZE) + INODETBLSTART);
-
-            // Calculate the offset inside the iNodeTable block
-            short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
-
-            // Read the iNodeTable block from disk
-            // If disk read error: catch exception, display error,
-            // and return -1
             try {
-                disk.getBlock(block, buffer);
+                writeToTable(iNumber);
             } catch (Exception e) {
-                System.out.println("Disk read error "
-                        + "@ INode.writeToTable(short iNumber)"
-                        + e);
-                return -1;
-            }
-
-            // Copies the location to the buffer
-            buffer[offset+1] = (byte)(this.location >> 8);
-            buffer[offset+2] = (byte)(this.location);
-
-            // Writes the iNodeTable Block back to disk
-            // If disk write error: catch exception, display error,
-            // and return -1
-            try {
-                disk.putBlock(block, buffer);
-            } catch (Exception e) {
-                System.out.println("Disk write error "
-                        + "@ INode.writeToBlock(short iNumber) "
+                System.out.println("Write to table error"
                         + e);
                 return -1;
             }
@@ -334,8 +362,8 @@ public class INode implements JfsInternalConstants {
         }
 
         // Copy the Type to byteBuffer
-        byteBuffer[9] = (byte) (this.Type >> 8);
-        byteBuffer[10] = (byte) (this.Type);
+        byteBuffer[9] = (byte) (this.type >> 8);
+        byteBuffer[10] = (byte) (this.type);
 
         // Copy the open file count to byteBuffer
         byteBuffer[11] = (byte) (this.openCount >> 8);
@@ -391,7 +419,7 @@ public class INode implements JfsInternalConstants {
         // If disk write error: catch exception, display error
         // and return -1
         try {
-            disk.putBlock(this.location, byteBuffer);
+            sb.disk.putBlock(this.location, byteBuffer);
         } catch (Exception e) {
             System.out.println("Disk write error "
                     + "@ INode.writeToTable(short iNumber): "
@@ -412,7 +440,8 @@ public class INode implements JfsInternalConstants {
      *      indirect block expanding the file size to 9,728 bytes
      *      (76 kilobytes).
      *
-     * @return 0 on success, -1 on failure.
+     * @return 0 on success, -1 on failure.int j = 0
+     *
      */
     private int Expand() {
 
@@ -429,7 +458,7 @@ public class INode implements JfsInternalConstants {
      *
      * @return 0 on success, -1 on failure.
      */
-//    public int readFromBlock(short iNumber) {
+    public int readFromBlock(short iNumber) {
 //
 //        // Calculate the iNodeTable block position
 //        short block = (short) (floor((iNumber * INODESIZE)
@@ -487,6 +516,7 @@ public class INode implements JfsInternalConstants {
 ////    public int readFromTable(String pathname) {
 //
 //
-//        return 0;
-//    }
+        return 0;
+    }
+
 }
