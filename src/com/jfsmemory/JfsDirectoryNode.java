@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 /**
  * Created by Nicholas De Souza on 29/11/14.
+ *
  */
 public class JfsDirectoryNode
 
@@ -31,13 +32,21 @@ public class JfsDirectoryNode
 
     }
 
+
     public JfsDirectoryNode search(String[] tokens, int cur) {
 
         JfsDirectoryNode error = new JfsDirectoryNode("ERROR", (short) 0);
 
-        if (cur == (tokens.length - 1) && child.containsKey(tokens[cur])) {
+        if (cur == (tokens.length - 2) && child.containsKey(tokens[cur])) {
 
-            return child.get(tokens[cur]);
+            if ((child.get(tokens[cur]).child.containsKey(tokens[cur + 1]))) {
+
+                return error;
+
+            } else {
+
+                return child.get(tokens[cur]);
+            }
 
         } else if (child.containsKey(tokens[cur])) {
 

@@ -55,11 +55,19 @@ public interface JfsInternalConstants {
 
     static final short NUMDINDIRECT = NUMINDIRECT * NUMINDIRECT;
 
+    static final short SHORTSIZE = 2;
+
     static final short SIZEOFPATH = 6;
 
     static enum Type{
         FREEINODE,
         FILE,
         DIRECTORY
+    }
+
+    static enum FLAGS {
+        CHECK,
+        ADD,
+        REMOVE
     }
 }

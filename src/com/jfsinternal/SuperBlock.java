@@ -437,7 +437,7 @@ public class SuperBlock implements JfsInternalConstants {
                     try {
                         disk.putBlock(freeBlkList, buffer);
                     } catch (Exception e) {
-                        System.out.println("Disk write errror"
+                        System.out.println("Disk write error"
                                 + e);
                         return -1;
                     }

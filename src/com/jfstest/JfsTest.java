@@ -251,7 +251,7 @@ public class JfsTest {
                                 "initializing, 0 otherwise: ");
                         p1 = in.nextInt();
                         retval = jfs.jfsInitialize(p1);
-                        if (retval >= 0) {
+                        if (retval < 0) {
                             System.out.println("jfsInitialize successful.");
                         } else {
                             System.out.println("Error. Return value was "

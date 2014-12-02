@@ -47,6 +47,11 @@ public class JfsCreate extends JfsInterface {
      * @param pathname
      * @param type
      * @return
+     *
+     * TODO: Link direct blocks in directories
+     * TODO: Validate file type
+     *
+     *
      */
     @Override
     public int jfsCreate(String pathname, int type) {

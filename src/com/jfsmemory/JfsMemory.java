@@ -1,6 +1,5 @@
 package com.jfsmemory;
 
-import com.jfsinternal.INode;
 import com.jfsinternal.SuperBlock;
 
 
@@ -10,9 +9,9 @@ import com.jfsinternal.SuperBlock;
 public class JfsMemory {
 
     public SuperBlock sb;
-    public INode iNode;
     public SystemFileTable sft;
     public JfsDirectoryTree jfsDirectoryTree;
+    public INodeTable iNodeTable;
 
     private static JfsMemory memory = new JfsMemory();
 
@@ -43,18 +42,6 @@ public class JfsMemory {
 
     }
 
-    public void setiNode(INode iNode) {
-
-        this.iNode = iNode;
-
-    }
-
-    public INode getInode() {
-
-        return iNode;
-
-    }
-
     public void setSft(SystemFileTable sft) {
 
         this.sft = sft;
@@ -79,5 +66,14 @@ public class JfsMemory {
 
     }
 
+    public void setiNodeTable(INodeTable iNodes) {
+
+        this.iNodeTable = iNodes;
+
+    }
+
+    public INodeTable getiNodeTable() {
+        return iNodeTable;
+    }
 
 }

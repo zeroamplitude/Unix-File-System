@@ -3,6 +3,8 @@ package com.jfsmemory;
 /**
  * Created by Nicholas De Souza on 29/11/14.
  */
+
+
 public class JfsDirectoryTree {
 
     JfsDirectoryNode root;
@@ -22,21 +24,18 @@ public class JfsDirectoryTree {
         JfsDirectoryNode newEntry = new JfsDirectoryNode(name, iNumber);
 
         traverseTree(tokens).addChild(newEntry);
+        System.out.println("Directory Added");
 
         return 0;
     }
 
-
     public JfsDirectoryNode traverseTree(String[] tokens) {
-        if (tokens[0].equals("")) {
 
-            System.out.print("ROOT");
+        if (tokens[0].equals("") && tokens.length == 2) {
 
             return this.root;
 
         } else {
-
-
 
             JfsDirectoryNode current = root.search(tokens, 1);
 

@@ -19,6 +19,7 @@
 
 package com.jfsinternal;
 
+import com.jfsmemory.JfsDirectoryNode;
 import com.jfsmemory.JfsDirectoryTree;
 import com.jfsmemory.JfsMemory;
 
@@ -35,6 +36,9 @@ public class INode implements JfsInternalConstants {
     private JfsDirectoryTree dt;
 
     protected int magic;
+    protected short magic2;
+    protected JfsDirectoryNode magic3;
+    protected String[] tokens;
 
     private byte status;
     private short location;
@@ -42,6 +46,7 @@ public class INode implements JfsInternalConstants {
     private short type;
     private short openCount;
     private short iNumber;
+    private short numFiles;
     private short size;
     private String cdate;
     private String adate;
@@ -49,6 +54,27 @@ public class INode implements JfsInternalConstants {
     private short direct[];
     private short indirect;
 
+
+    public INode(int iNumbers) {
+        byte[] rBuffer = new byte[BLKSIZE];
+        short iTblloc = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTblloc, rBuffer);
+            this.magic = 0;
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = rBuffer[offset];
+        this.location = (short) (((rBuffer[offset + 1] & 0x00ff) << 8)
+                + (rBuffer[offset + 2] & 0x00ff));
+        this.name = new String(rBuffer, offset + 3, 6);
+        this.type = (short) (((rBuffer[offset + 9] & 0x00ff) << 8)
+                + (rBuffer[offset + 10] & 0x00ff));
+        this.openCount = (short) (((rBuffer[offset + 11] & 0x00ff) << 8)
+                + (rBuffer[offset + 12] & 0x00ff));
+
+    }
 
     public INode(String root) {
         this.status = (byte) 1;     // 1 byte
@@ -64,6 +90,7 @@ public class INode implements JfsInternalConstants {
             this.magic = -1;
         }
 
+        this.numFiles = 0;
         this.size = 0;
         this.cdate = new Date().toString();
         this.adate = new Date().toString();
@@ -104,52 +131,94 @@ public class INode implements JfsInternalConstants {
      *             directory.
      */
     public INode(String[] name, int type) {
-        this.status = (byte) 1;     // 1 byte
 
-        if (type == 1) {
-            this.location = sb.getFreeBlock();          // 2 bytes
+        dt = memory.getJfsDirectoryTree();
+        magic3 = dt.traverseTree(name);
+        if (!magic3.name.equals("ERROR")) {
+            this.status = (byte) 1;     // 1 byte
+
+            if (type == 1) {
+                this.location = sb.getFreeBlock();
+            } else {
+                this.location = 0;
+            }
+
+            this.tokens = name;
+            this.name = name[name.length - 1];
+            this.type = (short) type;   // 0 if file, else 1
+            this.openCount = 0;
+
+            try {
+                this.iNumber = sb.getFreeINode();
+                this.magic = 0;
+            } catch (Exception e) {
+                this.magic = -1;
+            }
+            this.magic2 = this.iNumber;
+
+            this.numFiles = 0;
+
+            this.size = 0;
+            this.cdate = new Date().toString();
+            this.adate = new Date().toString();
+            this.mdate = new Date().toString();
+            this.direct = new short[12];
+            this.indirect = 0;
+
+
+            if (magic == 0) {
+                INode parent = new INode(magic3.iNumber);
+                short block = (short) floor(parent.numFiles / (BLKSIZE / SHORTSIZE));
+                short offset = (short) (parent.numFiles % (BLKSIZE / SHORTSIZE));
+                byte[] buffer = new byte[BLKSIZE];
+
+                try {
+
+                    if ((parent.numFiles % (BLKSIZE / SHORTSIZE)) == 0) {
+                        parent.direct[block] = sb.getFreeBlock();
+                    }
+                    // change made here
+                    sb.disk.getBlock(parent.direct[block], buffer);
+
+                    buffer[offset] = (byte) (this.magic2 >> 8);
+                    buffer[offset + 1] = (byte) (this.magic2);
+
+                    buffer[offset] = (byte) (parent.numFiles++ >> 8);
+
+                    sb.disk.putBlock(block, buffer);
+
+                    parent.numFiles++;
+
+                    parent.writeToBlock(parent.iNumber);
+
+                } catch (Exception e) {
+                    System.out.println("Disk read error "
+                            + "@Inode.pointParent: "
+                            + e);
+                    this.magic = -1;
+                }
+            }
+
+            if (this.magic == 0) {
+                this.magic = dt.updateDirectoryTree(tokens, magic2);
+            }
+
+            // On verification that the iNode was
+            // constructed it will write the iNode
+            // to the iNode table.
+            if (this.magic == 0) {
+                this.magic = writeToTable(this.iNumber);
+            }
+
+            // If this iNode is a directory it will
+            // create an iNode block on disk.
+            if (this.magic == 0 && this.type == 1) {
+                this.magic = writeToBlock(this.iNumber);
+            }
+
+
         } else {
-            this.location = 0;
-        }
-
-        this.name = name[name.length - 1];           // 6 bytes
-        this.type = (short) type;   // 0 if file, else 1
-        this.openCount = 0;         // 2 bytes
-
-        try {
-
-            this.iNumber = sb.getFreeINode();
-            this.magic = 0;
-
-        } catch (Exception e) {
-
             this.magic = -1;
-
-        }
-
-        this.size = 0;
-        this.cdate = new Date().toString();
-        this.adate = new Date().toString();
-        this.mdate = new Date().toString();
-        this.direct = new short[12];
-        this.indirect = 0;
-
-        // On verification that the iNode was
-        // constructed it will write the iNode
-        // to the iNode table.
-        if (this.magic == 0) {
-            magic = writeToTable(this.iNumber);
-        }
-
-        // If this iNode is a directory it will
-        // create an iNode block on disk.
-        if (this.magic == 0 && this.type == 1) {
-            magic = writeToBlock(this.iNumber);
-        }
-
-        if (magic == 0) {
-            memory.getJfsDirectoryTree();
-            magic = dt.updateDirectoryTree(name, this.iNumber);
         }
 
     }
@@ -164,12 +233,23 @@ public class INode implements JfsInternalConstants {
      */
     public INode(short iNumber) {
 
-        byte[] buffer = new byte[BLKSIZE];
+        byte[] rBuffer = new byte[BLKSIZE];
+
+        short iTblloc = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
+
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
 
         try {
 
-            sb.disk.getBlock(iNumber, buffer);
+            sb.disk.getBlock(iTblloc, rBuffer);
             this.magic = 0;
+
+            short block = (short) (((rBuffer[offset + 1] & 0x00ff) << 8)
+                    + (rBuffer[offset + 2] & 0x00ff));
+
+            rBuffer = new byte[BLKSIZE];
+
+            sb.disk.getBlock(block, rBuffer);
 
         } catch (Exception e) {
 
@@ -178,45 +258,51 @@ public class INode implements JfsInternalConstants {
         }
 
 
-        this.status = buffer[0];
+        this.status = rBuffer[0];
 
-        this.location = (short) (((buffer[1] & 0x00ff) << 8)
-                + (buffer[2] & 0x00ff));
+        this.location = (short) (((rBuffer[1] & 0x00ff) << 8)
+                + (rBuffer[2] & 0x00ff));
 
-        this.name = new String(buffer, 3, 6);
+        this.name = new String(rBuffer, 3, 6);
 
-        this.type = (short) (((buffer[9] & 0x00ff) << 8)
-                + (buffer[10] & 0x00ff));
+        this.type = (short) (((rBuffer[9] & 0x00ff) << 8)
+                + (rBuffer[10] & 0x00ff));
 
-        this.openCount = (short) (((buffer[11] & 0x00ff) << 8)
-                + (buffer[12] & 0x00ff));
+        this.openCount = (short) (((rBuffer[11] & 0x00ff) << 8)
+                + (rBuffer[12] & 0x00ff));
 
-        this.iNumber = (short) (((buffer[13] & 0x00ff) << 8)
-                + (buffer[14] & 0x00ff));
+        this.iNumber = (short) (((rBuffer[13] & 0x00ff) << 8)
+                + (rBuffer[14] & 0x00ff));
 
-        this.size = (short) (((buffer[15] & 0x00ff) << 8)
-                + (buffer[16] & 0x00ff));
+        this.size = (short) (((rBuffer[15] & 0x00ff) << 8)
+                + (rBuffer[16] & 0x00ff));
 
-        this.cdate = new String(buffer, 17, 10);
+        this.cdate = new String(rBuffer, 17, 28);
 
-        this.adate = new String(buffer, 27, 10);
+        this.adate = new String(rBuffer, 45, 28);
 
-        this.mdate = new String(buffer, 37, 10);
+        this.mdate = new String(rBuffer, 73, 28);
 
+        int j = 0;
         for (int i = 0; i < 12; i++) {
-
-            this.direct[i] = (short) (((buffer[47 + i] & 0x00ff) << 8)
-                    + (buffer[47 + i] & 0x00ff));
+            this.direct = new short[NUMDIRECT];
+            this.direct[i] = (short) (((rBuffer[101 + j] & 0x00ff) << 8)
+                    + (rBuffer[101 + j + 1] & 0x00ff));
+            j += 2;
         }
 
-        this.indirect = (short) (((buffer[58] & 0x00ff) << 8)
-                + (buffer[58] & 0x00ff));
+        this.indirect = (short) (((rBuffer[125] & 0x00ff) << 8)
+                + (rBuffer[126] & 0x00ff));
 
 
     }
 
     public int getMagic() {
-        return magic;
+        return this.magic;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -414,7 +500,8 @@ public class INode implements JfsInternalConstants {
         byteBuffer[j] = (byte) (this.indirect >> 8);
         byteBuffer[j + 1] = (byte) (this.indirect);
 
-
+        byteBuffer[j] = (byte) (this.numFiles >> 8);
+        byteBuffer[j + 1] = (byte) (this.numFiles);
         // Write the modified byteBuffer back to the block
         // If disk write error: catch exception, display error
         // and return -1
@@ -445,77 +532,6 @@ public class INode implements JfsInternalConstants {
      */
     private int Expand() {
 
-        return 0;
-    }
-
-    /**
-     * readFromBlock
-     *      This method locates the iNode, specified by the
-     *      iNumber, reads it from disk, caches it into memory.
-     *
-     * @param iNumber A short integer value that represents the
-     *                index of an iNode in the iNodeTable.
-     *
-     * @return 0 on success, -1 on failure.
-     */
-    public int readFromBlock(short iNumber) {
-//
-//        // Calculate the iNodeTable block position
-//        short block = (short) (floor((iNumber * INODESIZE)
-//                / BLKSIZE) + INODETBLSTART);
-//
-//        // Calculate the offset inside the iNodeTable block
-//        short offset = (short) ((iNumber * INODESIZE) % BLKSIZE);
-//
-//        // Allocate a new buffer to store the block data
-//        byte[] buffer = new byte[BLKSIZE];
-//
-//        // Read the iNodeTable block from disk
-//        // If disk read error: catch exception, display error,
-//        // and return -1
-//        try {
-//            disk.getBlock(block, buffer);
-//        } catch (Exception e) {
-//            System.out.println("Disk read error "
-//                    + "@ INode.writeToTable(short iNumber)"
-//                    + e);
-//            return -1;
-//        }
-//
-//        short location = (short) (((buffer[1] & 0x00ff) << 8)
-//                + (buffer[2] & 0x00ff));
-//
-//        // Clear the buffer to store the iNode data
-//        buffer = new byte[BLKSIZE];
-//
-//        // Read the iNodeTable block from disk
-//        // If disk read error: catch exception, display error,
-//        // and return -1
-//        try {
-//            disk.getBlock(location, buffer);
-//        } catch (Exception e) {
-//            System.out.println("Disk read error "
-//                    + "@ INode.readFromBlock(short iNumber)"
-//                    + e);
-//            return -1;
-//        }
-//
-//        INode open;
-//        try {
-//            open = new INode(buffer);
-//        } catch (Exception e) {
-//            System.out.println("iNode open error "
-//                    + "@ INode.readFromBlock(short iNumber)"
-//                    + e);
-//            return -1;
-//        }
-//
-//        return open.iNumber;
-//    }
-//
-////    public int readFromTable(String pathname) {
-//
-//
         return 0;
     }
 

@@ -22,6 +22,7 @@ package com.jfsfunctions;
 import com.jfsinternal.INode;
 import com.jfsinternal.JfsInternalConstants;
 import com.jfsinternal.SuperBlock;
+import com.jfsmemory.INodeTable;
 import com.jfsmemory.JfsDirectoryTree;
 import com.jfsmemory.JfsMemory;
 
@@ -34,6 +35,7 @@ public class JfsInitialize extends JfsInterface {
     private INode root;
     private JfsMemory memory;
     private JfsDirectoryTree dt;
+    private INodeTable iTable;
     int error = 0;
 
     public JfsInitialize(JfsMemory memory) {
@@ -83,12 +85,23 @@ public class JfsInitialize extends JfsInterface {
                 return -1;
             }
 
-//            /* Read Root ('/') to memory */
-//            if ((error = readRoot()) < 0) {
-//                return -1;
-//            }
+            /* Read Root ('/') to memory */
+            if ((error = readRoot()) < 0) {
+                return -1;
+            }
         }
 
+        return 0;
+    }
+
+    private int readiTable() {
+        try {
+            iTable = new INodeTable();
+            iTable.cacheInodeTable();
+
+        } catch (Exception e) {
+
+        }
         return 0;
     }
 

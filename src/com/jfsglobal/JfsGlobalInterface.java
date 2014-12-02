@@ -19,10 +19,14 @@
 
 package com.jfsglobal;
 
+import com.jfsfunctions.JfsFunctionConstants;
+import com.jfsfunctions.JfsFunctionMethods;
+import com.jfsinternal.JfsInternalConstants;
+
 /**
  * Created by nicholas on 25/11/14.
  */
-public interface JfsGlobalInterface {
+public interface JfsGlobalInterface extends JfsInternalConstants, JfsFunctionMethods, JfsFunctionConstants {
 
     public String fileFromPath(String pathName);
 
@@ -33,5 +37,6 @@ public interface JfsGlobalInterface {
     public int byteToInt(byte[] b);
 
     public short byteToShort(byte[] b);
+
 
 }
