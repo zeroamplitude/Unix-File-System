@@ -47,7 +47,7 @@ public class SuperBlock implements JfsInternalConstants {
     private short freeBlkList;
 
 
-    public SuperBlock(short newFlag) {
+    public SuperBlock(short Flag) {
 
         byte[] readBuffer = new byte[BLKSIZE];
 
@@ -387,12 +387,14 @@ public class SuperBlock implements JfsInternalConstants {
 
                     freeInodeQueue++;
                     freeINodeCount--;
+                    writeToDisk();
 
                     return (short) (i + (((freeInodeQueue - 1) - INODETBLSTART) * INODETBLSIZE));
 
                 } else if (buffer[j] == (byte) 0) {
 
                     freeINodeCount--;
+                    writeToDisk();
                     return (short) (i + (freeInodeQueue - INODETBLSTART) * INODETBLSIZE);
 
                 }
@@ -427,7 +429,7 @@ public class SuperBlock implements JfsInternalConstants {
 
                     freeBlkList = nextFreeBlkHead;
                     freeBlkCount--;
-
+                    writeToDisk();
                     return freeBlk;
 
                 } else if (freeBlk != (byte) 0) {
@@ -443,6 +445,7 @@ public class SuperBlock implements JfsInternalConstants {
                     }
 
                     freeBlkCount--;
+                    writeToDisk();
                     return freeBlk;
 
                 }

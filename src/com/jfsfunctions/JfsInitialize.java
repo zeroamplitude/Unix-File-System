@@ -77,7 +77,7 @@ public class JfsInitialize extends JfsInterface {
             }
 
         } else {
-
+            // memory = JfsMemory.getInstance();
             sb = new SuperBlock((short) 1);
             memory.setSb(sb);
             /* Read SuperBlock */
@@ -85,8 +85,8 @@ public class JfsInitialize extends JfsInterface {
                 return -1;
             }
 
-            /* Read Root ('/') to memory */
-            if ((error = readRoot()) < 0) {
+            /* Read iNode table to memory */
+            if ((error = cacheiTable()) < 0) {
                 return -1;
             }
         }
@@ -94,13 +94,15 @@ public class JfsInitialize extends JfsInterface {
         return 0;
     }
 
-    private int readiTable() {
+    private int cacheiTable() {
         try {
             iTable = new INodeTable();
             iTable.cacheInodeTable();
-
+            memory.setiNodeTable(iTable);
         } catch (Exception e) {
-
+            System.out.println("Cache iNode error"
+                    + e);
+            return -1;
         }
         return 0;
     }
