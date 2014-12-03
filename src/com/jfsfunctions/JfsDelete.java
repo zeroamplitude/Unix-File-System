@@ -19,75 +19,50 @@
 
 package com.jfsfunctions;
 
+import com.jfsinternal.INode;
+import com.jfsmemory.JfsDirectoryEntry;
+import com.jfsmemory.JfsDirectoryTree;
+import com.jfsmemory.JfsMemory;
+import com.jfsmemory.SystemWideOpenFileTable;
+
+import static com.jfsinternal.JfsInternalConstants.FLAGS;
+
 /**
- * @author MILAN KORNICER
+ * @author Nicholas De Souza
  */
-public abstract class JfsDelete extends JfsInterface {
+public class JfsDelete extends JfsInterface {
+    JfsMemory memory;
+    JfsDirectoryTree dt;
+    SystemWideOpenFileTable swoft;
+
+
+    public JfsDelete(JfsMemory memory) {
+        memory = JfsMemory.getInstance();
+        dt = memory.getJfsDirectoryTree();
+        swoft = memory.getSwoft();
+    }
+
+
+
     @Override
     public int jfsDelete(String pathname) {
 
-        /*
-        ###############################################################
-        THIS DELETES A FILE EVEN IF IT IS OPEN, DOES NOT REQUIRE IT TO BE CLOSED BEFORE HAND
-        */
+        // Parse pathname
+        String[] tokens = pathname.split("/");
 
+        // Check if file exist in the directoryTree
+        // while, geting the iNumber;
+        JfsDirectoryEntry iDelete = dt.traverseTree(tokens, FLAGS.CHECK);
+        if (iDelete.name.equals("ERROR")) {
+            return -1;
+        }
 
-//        int inum = 0;
-//        int fd = 0;
-//        int type = 0;
-//        int indexBlock = 0;
-//
-//        inum = traverse_file_sys(pathname); // this handles if the file exists or not
-//        // returns -1 if the file doesn't exist or the actual inum which is > 0
-//
-//
-//        if (inum > 0) {
-//
-//            type = getType(inum); // from inode
-//
-//            if (type == 1) {
-//                // THIS IS A DIRECTORY MUST MAKE SURE THEY HAVE NO CHILDREN BEFORE DELETING
-//
-//
-//            } else if (type == 0) {
-//
-//                // check if the file is open or not before deleting
-//
-//                fd = getFD(inum);
-//                if (fd > 0) {
-//                    // if the file is already open we need to close it b4 deleting
-//
-//                    remove(fd);
-//
-//                    indexBlock = getIndexBlock(inum);
-//                    // remove everything that the inode is associated with
-//                    // remove index block / and all data blocks
-//                    // set all types to zero or null w.e.
-//
-//
-//                } else {
-//
-//
-//                    indexBlock = getIndexBlock(inum);
-//                    // remove everything that the inode is associated with
-//                    // remove index block / and all data blocks
-//                    // set all types to zero or null w.e.
-//
-//
-//                }
-//
-//
-//            } else {
-//                System.out.println("something went wrong");
-//                return -1;
-//            }
-//
-//        } else {
-//
-//            System.out.println("Could not delete the file");
-//            return -1;
-//
-//        }
+        // If exists in directoryTree check for instances in swoft.
+        int exists = swoft.checkFileStatus(iDelete.iNumber);
+
+        // Send to INode to handle deletion.
+        INode delete = new INode(iDelete, tokens, exists);
+
 
 
         return 0;

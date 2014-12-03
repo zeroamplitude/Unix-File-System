@@ -28,6 +28,7 @@ public class JfsGetSize extends JfsInterface {
     public int jfsGetSize(String pathname) {
         int fileSize = 0;
 
+
         /*
          * parse the pathname to determine if it is a correct pathname
          */

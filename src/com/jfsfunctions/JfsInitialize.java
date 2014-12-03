@@ -25,22 +25,29 @@ import com.jfsinternal.SuperBlock;
 import com.jfsmemory.INodeTable;
 import com.jfsmemory.JfsDirectoryTree;
 import com.jfsmemory.JfsMemory;
+import com.jfsmemory.SystemWideOpenFileTable;
 
 /**
  *
  * @author Nicholas De souza
  */
 public class JfsInitialize extends JfsInterface {
+
+    /* Memory components jfs */
+    private JfsMemory memory;
     private SuperBlock sb;
     private INode root;
-    private JfsMemory memory;
-    private JfsDirectoryTree dt;
     private INodeTable iTable;
+    private JfsDirectoryTree dt;
+    private SystemWideOpenFileTable swoft;
+
     int error = 0;
 
     public JfsInitialize(JfsMemory memory) {
         this.memory = memory;
         sb = new SuperBlock();
+        swoft = new SystemWideOpenFileTable();
+        this.memory.setSwoft(swoft);
     }
 
     /**

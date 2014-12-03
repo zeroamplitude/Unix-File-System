@@ -21,6 +21,8 @@ package com.jfsinternal;
 
 import com.jfsmemory.JfsMemory;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.floor;
 
 /**
@@ -134,9 +136,7 @@ public class SuperBlock implements JfsInternalConstants {
         buffer[9] = (byte)(this.freeBlkList);
 
         try {
-
             disk.putBlock(0, buffer);
-
         } catch (Exception e) {
 
             System.out.println("Disk write error:  "
@@ -147,6 +147,7 @@ public class SuperBlock implements JfsInternalConstants {
 
         }
         return 0;
+
     }
 
     private short makeFreeBlkList() {
@@ -454,6 +455,51 @@ public class SuperBlock implements JfsInternalConstants {
             return -1;
 
         }
+    }
+
+    public short putFreeBlock(ArrayList<Short> newFreeBlks) {
+        short newFreeBlkHead = 0;
+        boolean newHead;
+        if (freeBlkCount % 64 < newFreeBlks.size()) {
+            newFreeBlkHead = getFreeBlock();
+            newHead = true;
+        } else {
+            newFreeBlkHead = freeBlkList;
+            newHead = false;
+        }
+
+        byte[] sBuffer = new byte[NUMBLKS];
+
+        try {
+            disk.getBlock(newFreeBlkHead, sBuffer);
+        } catch (Exception e) {
+            System.out.println("Disk write error: "
+                    + e);
+            return -1;
+        }
+
+        for (int i = 0; i < newFreeBlks.size() - 1; i++) {
+            short freeBlk = newFreeBlks.remove(i);
+            sBuffer[i] = (byte) (freeBlk >> 8);
+            sBuffer[i] = (byte) (freeBlk);
+            this.freeBlkCount++;
+        }
+
+        if (newHead) {
+            sBuffer[126] = (byte) (freeBlkList >> 8);
+            sBuffer[127] = (byte) (freeBlkList);
+            this.freeBlkList = newFreeBlkHead;
+        }
+
+        try {
+            writeToDisk();
+            disk.putBlock(this.freeBlkList, sBuffer);
+        } catch (Exception e) {
+            System.out.println("Disk write error "
+                    + e);
+            return -1;
+        }
+        return 0;
     }
 
     public int checkiMap() {

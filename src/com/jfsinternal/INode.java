@@ -19,10 +19,12 @@
 
 package com.jfsinternal;
 
-import com.jfsmemory.JfsDirectoryNode;
+import com.jfsmemory.JfsDirectoryEntry;
 import com.jfsmemory.JfsDirectoryTree;
 import com.jfsmemory.JfsMemory;
+import com.jfsmemory.SystemWideOpenFileTable;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import static java.lang.Math.floor;
@@ -32,12 +34,13 @@ import static java.lang.Math.floor;
  */
 public class INode implements JfsInternalConstants {
     private JfsMemory memory = JfsMemory.getInstance();
+    private SystemWideOpenFileTable swoft = memory.getSwoft();
     private SuperBlock sb = memory.getSb();
     private JfsDirectoryTree dt;
 
     protected int magic;
     protected short magic2;
-    protected JfsDirectoryNode magic3;
+    protected JfsDirectoryEntry magic3;
     protected String[] tokens;
 
     private byte status;
@@ -54,27 +57,31 @@ public class INode implements JfsInternalConstants {
     private short direct[];
     private short indirect;
 
+    public INode(int iNumber) {
 
-    public INode(int iNumbers) {
-        byte[] rBuffer = new byte[BLKSIZE];
-        short iTblloc = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
         short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
         try {
-            sb.disk.getBlock(iTblloc, rBuffer);
+            sb.disk.getBlock(iTableBlk, iBuffer);
             this.magic = 0;
         } catch (Exception e) {
             this.magic = -1;
         }
-        this.status = rBuffer[offset];
-        this.location = (short) (((rBuffer[offset + 1] & 0x00ff) << 8)
-                + (rBuffer[offset + 2] & 0x00ff));
-        this.name = new String(rBuffer, offset + 3, 6);
-        this.type = (short) (((rBuffer[offset + 9] & 0x00ff) << 8)
-                + (rBuffer[offset + 10] & 0x00ff));
-        this.openCount = (short) (((rBuffer[offset + 11] & 0x00ff) << 8)
-                + (rBuffer[offset + 12] & 0x00ff));
 
+        this.status = iBuffer[offset];
+        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                + (iBuffer[offset + 2] & 0x00ff));
+        this.name = new String(iBuffer, offset + 3, 6);
+        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
+                + (iBuffer[offset + 10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
+                + (iBuffer[offset + 12] & 0x00ff));
+        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
+                + (iBuffer[offset + 14] & 0x00ff));
     }
+
 
     public INode(String root) {
         this.status = (byte) 1;     // 1 byte
@@ -133,7 +140,7 @@ public class INode implements JfsInternalConstants {
     public INode(String[] name, int type) {
 
         dt = memory.getJfsDirectoryTree();
-        magic3 = dt.traverseTree(name);
+        magic3 = dt.traverseTree(name, FLAGS.CHECK);
         if (!magic3.name.equals("ERROR")) {
             this.status = (byte) 1;     // 1 byte
 
@@ -233,23 +240,23 @@ public class INode implements JfsInternalConstants {
      */
     public INode(short iNumber) {
 
-        byte[] rBuffer = new byte[BLKSIZE];
+        byte[] iBuffer = new byte[BLKSIZE];
 
-        short iTblloc = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
 
         short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
 
         try {
 
-            sb.disk.getBlock(iTblloc, rBuffer);
+            sb.disk.getBlock(iTableBlk, iBuffer);
             this.magic = 0;
 
-            short block = (short) (((rBuffer[offset + 1] & 0x00ff) << 8)
-                    + (rBuffer[offset + 2] & 0x00ff));
+            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                    + (iBuffer[offset + 2] & 0x00ff));
 
-            rBuffer = new byte[BLKSIZE];
+            iBuffer = new byte[BLKSIZE];
 
-            sb.disk.getBlock(block, rBuffer);
+            sb.disk.getBlock(block, iBuffer);
 
         } catch (Exception e) {
 
@@ -258,43 +265,152 @@ public class INode implements JfsInternalConstants {
         }
 
 
-        this.status = rBuffer[0];
+        this.status = iBuffer[0];
 
-        this.location = (short) (((rBuffer[1] & 0x00ff) << 8)
-                + (rBuffer[2] & 0x00ff));
+        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
+                + (iBuffer[2] & 0x00ff));
 
-        this.name = new String(rBuffer, 3, 6);
+        this.name = new String(iBuffer, 3, 6);
 
-        this.type = (short) (((rBuffer[9] & 0x00ff) << 8)
-                + (rBuffer[10] & 0x00ff));
+        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
+                + (iBuffer[10] & 0x00ff));
 
-        this.openCount = (short) (((rBuffer[11] & 0x00ff) << 8)
-                + (rBuffer[12] & 0x00ff));
+        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
+                + (iBuffer[12] & 0x00ff));
 
-        this.iNumber = (short) (((rBuffer[13] & 0x00ff) << 8)
-                + (rBuffer[14] & 0x00ff));
+        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
+                + (iBuffer[14] & 0x00ff));
 
-        this.size = (short) (((rBuffer[15] & 0x00ff) << 8)
-                + (rBuffer[16] & 0x00ff));
+        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
+                + (iBuffer[16] & 0x00ff));
 
-        this.cdate = new String(rBuffer, 17, 28);
+        this.cdate = new String(iBuffer, 17, 28);
 
-        this.adate = new String(rBuffer, 45, 28);
+        this.adate = new String(iBuffer, 45, 28);
 
-        this.mdate = new String(rBuffer, 73, 28);
+        this.mdate = new String(iBuffer, 73, 28);
 
         int j = 0;
         for (int i = 0; i < 12; i++) {
             this.direct = new short[NUMDIRECT];
-            this.direct[i] = (short) (((rBuffer[101 + j] & 0x00ff) << 8)
-                    + (rBuffer[101 + j + 1] & 0x00ff));
+            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                    + (iBuffer[101 + j + 1] & 0x00ff));
             j += 2;
         }
 
-        this.indirect = (short) (((rBuffer[125] & 0x00ff) << 8)
-                + (rBuffer[126] & 0x00ff));
+        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
+                + (iBuffer[126] & 0x00ff));
 
 
+    }
+
+    public INode(int iNumbers, String[] tokens, int exist) {
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                    + (iBuffer[offset + 2] & 0x00ff));
+            iBuffer = new byte[BLKSIZE];
+            this.magic = 0;
+            sb.disk.getBlock(block, iBuffer);
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = iBuffer[0];
+        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
+                + (iBuffer[2] & 0x00ff));
+        this.name = new String(iBuffer, 3, 6);
+        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
+                + (iBuffer[10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
+                + (iBuffer[12] & 0x00ff));
+        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
+                + (iBuffer[14] & 0x00ff));
+        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
+                + (iBuffer[16] & 0x00ff));
+        this.cdate = new String(iBuffer, 17, 28);
+        this.adate = new String(iBuffer, 45, 28);
+        this.mdate = new String(iBuffer, 73, 28);
+        int j = 0;
+        for (int i = 0; i < 12; i++) {
+            this.direct = new short[NUMDIRECT];
+            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                    + (iBuffer[101 + j + 1] & 0x00ff));
+            j += 2;
+        }
+        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
+                + (iBuffer[126] & 0x00ff));
+
+
+    }
+
+    public INode(JfsDirectoryEntry iDelete, String[] tokens, int exists) {
+
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            this.magic = 0;
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = iBuffer[offset];
+        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                + (iBuffer[offset + 2] & 0x00ff));
+        this.name = new String(iBuffer, offset + 3, 6);
+        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
+                + (iBuffer[offset + 10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
+                + (iBuffer[offset + 12] & 0x00ff));
+        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
+                + (iBuffer[offset + 14] & 0x00ff));
+
+
+        if (this.type == 1 && this.numFiles == 0) {
+            this.magic = -1;
+        }
+
+        if (this.magic >= 0) {
+            iBuffer = new byte[BLKSIZE];
+            sb.disk.getBlock(location, iBuffer);
+            ArrayList<Short> newFreeBlks = new ArrayList<Short>();
+            int j = 0;
+            for (int i = 0; i < 12; i++) {
+                this.direct = new short[NUMDIRECT];
+                this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                        + (iBuffer[101 + j + 1] & 0x00ff));
+                if (direct[i] != 0) {
+                    newFreeBlks.add(direct[i]);
+                }
+                j += 2;
+            }
+
+            newFreeBlks.add(this.location);
+            sb.putFreeBlock(newFreeBlks);
+        }
+
+        if (this.magic >= 0) {
+            this.status = 0;
+            this.location = 0;
+            this.name = "000000";
+            this.type = 0;
+            this.openCount = 0;
+            this.numFiles = 0;
+
+            try {
+                writeToTable(iDelete.iNumber);
+                dt.traverseTree(tokens, FLAGS.REMOVE);
+            } catch (Exception e) {
+                System.out.println("Write to table error "
+                        + e);
+                magic = -1;
+            }
+        }
     }
 
     public int getMagic() {
@@ -303,6 +419,18 @@ public class INode implements JfsInternalConstants {
 
     public String getName() {
         return this.name;
+    }
+
+    public short getSize() {
+        return this.size;
+    }
+
+    public short getType() {
+        return this.type;
+    }
+
+    public short getiNumber() {
+        return iNumber;
     }
 
     /**
@@ -359,6 +487,9 @@ public class INode implements JfsInternalConstants {
         // Copy the open count to buffer
         buffer[offset+11] = (byte)(this.openCount >> 8);
         buffer[offset+12] = (byte)(this.openCount);
+        buffer[offset + 13] = (byte) (this.numFiles >> 8);
+        buffer[offset + 14] = (byte) (this.numFiles);
+
         // Write the modified buffer back to the block
         // If disk write error: catch exception, display error
         // and return -1
@@ -373,7 +504,6 @@ public class INode implements JfsInternalConstants {
         // If all operations successful return 0
         return 0;
     }
-
 
     /**
      * writeNewToBlock
@@ -500,8 +630,6 @@ public class INode implements JfsInternalConstants {
         byteBuffer[j] = (byte) (this.indirect >> 8);
         byteBuffer[j + 1] = (byte) (this.indirect);
 
-        byteBuffer[j] = (byte) (this.numFiles >> 8);
-        byteBuffer[j + 1] = (byte) (this.numFiles);
         // Write the modified byteBuffer back to the block
         // If disk write error: catch exception, display error
         // and return -1
@@ -516,6 +644,13 @@ public class INode implements JfsInternalConstants {
 
         // If all operations successful return 0
         return 0;
+    }
+
+
+    private short addDirectBlock() {
+
+        return sb.getFreeBlock();
+
     }
 
 

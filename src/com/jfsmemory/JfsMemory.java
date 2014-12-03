@@ -9,7 +9,7 @@ import com.jfsinternal.SuperBlock;
 public class JfsMemory {
 
     public SuperBlock sb;
-    public SystemFileTable sft;
+    public SystemWideOpenFileTable swoft;
     public JfsDirectoryTree jfsDirectoryTree;
     public INodeTable iNodeTable;
 
@@ -21,10 +21,6 @@ public class JfsMemory {
     public static JfsMemory getInstance() {
         return memory;
     }
-
-//    public static JfsMemory createJfsMemory() {
-//        return new JfsMemory();
-//    }
 
     public void setSb(SuperBlock sb) {
 
@@ -42,15 +38,15 @@ public class JfsMemory {
 
     }
 
-    public void setSft(SystemFileTable sft) {
+    public void setSwoft(SystemWideOpenFileTable swoft) {
 
-        this.sft = sft;
+        this.swoft = swoft;
 
     }
 
-    public SystemFileTable getSft() {
+    public SystemWideOpenFileTable getSwoft() {
 
-        return sft;
+        return swoft;
 
     }
 

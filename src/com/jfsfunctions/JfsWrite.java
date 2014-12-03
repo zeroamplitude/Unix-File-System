@@ -24,7 +24,7 @@ package com.jfsfunctions;
  */
 public class JfsWrite extends JfsInterface {
     @Override
-    public int jfsWrite(int fd, int start, int length, String mem_pointer) {
+    public synchronized int jfsWrite(int fd, int start, int length, String mem_pointer) {
         return 0;
     }
 }

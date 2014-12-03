@@ -1,5 +1,7 @@
 package com.jfsmemory;
 
+import static com.jfsinternal.JfsInternalConstants.FLAGS;
+
 /**
  * Created by Nicholas De Souza on 29/11/14.
  */
@@ -7,11 +9,11 @@ package com.jfsmemory;
 
 public class JfsDirectoryTree {
 
-    JfsDirectoryNode root;
+    JfsDirectoryEntry root;
 
     public JfsDirectoryTree(String name, short iNumber) {
 
-        root = new JfsDirectoryNode(name, iNumber);
+        root = new JfsDirectoryEntry(name, iNumber);
 
     }
 
@@ -21,24 +23,29 @@ public class JfsDirectoryTree {
         int location = (tokens.length);
         String name = tokens[location - 1];
 
-        JfsDirectoryNode newEntry = new JfsDirectoryNode(name, iNumber);
+        JfsDirectoryEntry newEntry = new JfsDirectoryEntry(name, iNumber);
 
-        traverseTree(tokens).addChild(newEntry);
+        traverseTree(tokens, FLAGS.ADD).addChild(newEntry);
         System.out.println("Directory Added");
 
         return 0;
     }
 
-    public JfsDirectoryNode traverseTree(String[] tokens) {
+    public JfsDirectoryEntry traverseTree(String[] tokens, FLAGS flag) {
 
         if (tokens[0].equals("") && tokens.length == 2) {
 
             return this.root;
 
         } else {
-
-            JfsDirectoryNode current = root.search(tokens, 1);
-
+            JfsDirectoryEntry current;
+            if (flag == FLAGS.ADD) {
+                current = root.search(tokens, 1, FLAGS.ADD);
+            } else if (flag == FLAGS.REMOVE) {
+                current = root.search(tokens, 1, FLAGS.REMOVE);
+            } else {
+                current = root.search(tokens, 1, FLAGS.CHECK);
+            }
 
             if (current.name.equals("ERROR")) {
                 System.out.println("Error");

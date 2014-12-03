@@ -19,10 +19,7 @@
 
 package com.jfstest;
 
-import com.jfsfunctions.JfsCreate;
-import com.jfsfunctions.JfsInitialize;
-import com.jfsfunctions.JfsInterface;
-import com.jfsfunctions.JfsOpen;
+import com.jfsfunctions.*;
 import com.jfsmemory.JfsMemory;
 
 import javax.validation.constraints.Size;
@@ -119,7 +116,7 @@ public class JfsTest {
                         System.out.println("Enter number of bytes to read: ");
                         p3 = in.nextInt();
                         retval = jfs.jfsRead(p1, p2, p3, ioBuffer);
-                        if (retval > 0) {
+                        if (retval >= 0) {
                             System.out.println("Read successful.");
                             System.out.println("The following data was " +
                                     "read (only printable ASCII will " +
@@ -146,7 +143,7 @@ public class JfsTest {
                                 " be written: ");
                         ioBuffer = in.nextLine();
                         retval = jfs.jfsWrite(p1, p2, p3, ioBuffer);
-                        if (retval > 0) {
+                        if (retval >= 0) {
                             System.out.println("Write successful.");
                             System.out.println("Wrote" + ioBuffer +
                                     " to the disk");
@@ -177,7 +174,7 @@ public class JfsTest {
                         System.out.println("Enter file descriptor number: ");
                         p1 = in.nextInt();
                         retval = jfs.jfsClose(p1);
-                        if (retval > 0) {
+                        if (retval >= 0) {
                             System.out.println("jfsClose successful.");
                         } else {
                             System.out.println("Error. Return value was " + retval);
@@ -193,7 +190,7 @@ public class JfsTest {
                                 "for directory: ");
                         p1 = in.nextInt();
                         retval = jfs.jfsCreate(dataBuffer, p1);
-                        if (retval > 0) {
+                        if (retval >= 0) {
                             System.out.println("jfsCreate successful.");
                         } else {
                             System.out.println("Error. Return value was "
@@ -202,11 +199,12 @@ public class JfsTest {
                         break;
 
                     case 'd': /* Delete a file */
+                        jfs = new JfsDelete(memory);
                         System.out.println("Enter full path name of file" +
                                 " to delete: ");
                         dataBuffer = in.nextLine();
                         retval = jfs.jfsDelete(dataBuffer);
-                        if (retval > 0) {
+                        if (retval >= 0) {
                             System.out.println("jfsDelete successful.");
                         } else {
                             System.out.println("Error. Return value was "
@@ -215,6 +213,7 @@ public class JfsTest {
                         break;
 
                     case 's': /* Get the size of a file */
+                        jfs = new JfsGetSize();
                         System.out.println("Enter full path name of file: ");
                         dataBuffer = in.nextLine();
                         retval = jfs.jfsGetSize(dataBuffer);
@@ -228,6 +227,7 @@ public class JfsTest {
                         break;
 
                     case 't': /* Get the type of a file */
+                        jfs = new JfsGetType();
                         System.out.println("Enter full path name of file: ");
                         dataBuffer = in.nextLine();
                         retval = jfs.jfsGetType(dataBuffer);
@@ -251,7 +251,7 @@ public class JfsTest {
                                 "initializing, 0 otherwise: ");
                         p1 = in.nextInt();
                         retval = jfs.jfsInitialize(p1);
-                        if (retval < 0) {
+                        if (retval >= 0) {
                             System.out.println("jfsInitialize successful.");
                         } else {
                             System.out.println("Error. Return value was "

@@ -24,7 +24,7 @@ package com.jfsfunctions;
  */
 public class JfsRead extends JfsInterface {
     @Override
-    public int jfsRead(int fd, int start, int length, String mem_pointer) {
+    public synchronized int jfsRead(int fd, int start, int length, String mem_pointer) {
         return 0;
     }
 }
