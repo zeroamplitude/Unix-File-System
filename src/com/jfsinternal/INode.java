@@ -421,9 +421,7 @@ public class INode implements JfsInternalConstants {
 
     public int delete() {
 
-        dt.
-
-                INode parent = new INode()
+        INode parent = new INode(this.name);
 
         this.status = 0;
         this.location = 0;
@@ -431,6 +429,8 @@ public class INode implements JfsInternalConstants {
         this.type = 0;
         this.openCount = 0;
         this.numFiles = 0;
+
+        return 0;
 
     }
 

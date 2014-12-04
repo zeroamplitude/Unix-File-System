@@ -33,7 +33,7 @@ public class JfsDirectoryTree {
     }
 
     public int checkifExists(String[] tokens) {
-
+        return 0;
     }
 
     public JfsDirectoryEntry traverseTree(String[] tokens) {
