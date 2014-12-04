@@ -205,6 +205,13 @@ public class INode implements JfsInternalConstants {
 
     }
 
+    public INode(String[] tokens) {
+        dt = memory.getJfsDirectoryTree();
+        magic3 = dt.getEntry(tokens);
+
+
+    }
+
     /**
      * INode Constructor
      * This is the first constructor of an iNode when
@@ -254,7 +261,7 @@ public class INode implements JfsInternalConstants {
 
 
             if (magic == 0) {
-                INode parent = new INode(magic3.iNumber);
+                INode parent = new INode(magic3.iNode.iNumber);
                 short block = (short) floor(parent.numFiles / (BLKSIZE / SHORTSIZE));
                 short offset = (short) (parent.numFiles % (BLKSIZE / SHORTSIZE));
                 byte[] buffer = new byte[BLKSIZE];
@@ -286,10 +293,6 @@ public class INode implements JfsInternalConstants {
                 }
             }
 
-            if (this.magic == 0) {
-                this.magic = dt.updateDirectoryTree(tokens, magic2);
-            }
-
             // On verification that the iNode was
             // constructed it will write the iNode
             // to the iNode table.
@@ -303,6 +306,9 @@ public class INode implements JfsInternalConstants {
                 this.magic = writeToBlock(this.iNumber);
             }
 
+            if (this.magic == 0) {
+                this.magic = dt.updateDirectoryTree(tokens, magic2);
+            }
 
         } else {
             this.magic = -1;
@@ -310,118 +316,17 @@ public class INode implements JfsInternalConstants {
 
     }
 
-    public INode(JfsDirectoryEntry iDelete, String[] tokens, int exists) {
-
-        byte[] iBuffer = new byte[BLKSIZE];
-        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
-                + INODETBLSTART);
-        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
-        try {
-            sb.disk.getBlock(iTableBlk, iBuffer);
-            this.magic = 0;
-        } catch (Exception e) {
-            this.magic = -1;
-        }
-        this.status = iBuffer[offset];
-        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
-                + (iBuffer[offset + 2] & 0x00ff));
-        this.name = new String(iBuffer, offset + 3, 6);
-        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
-                + (iBuffer[offset + 10] & 0x00ff));
-        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
-                + (iBuffer[offset + 12] & 0x00ff));
-        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
-                + (iBuffer[offset + 14] & 0x00ff));
 
 
-        if (this.type == 1 && this.numFiles == 0) {
-            this.magic = -1;
-        }
-
-        if (this.magic >= 0) {
-            iBuffer = new byte[BLKSIZE];
-            sb.disk.getBlock(location, iBuffer);
-            ArrayList<Short> newFreeBlks = new ArrayList<Short>();
-            int j = 0;
-            for (int i = 0; i < 12; i++) {
-                this.direct = new short[NUMDIRECT];
-                this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
-                        + (iBuffer[101 + j + 1] & 0x00ff));
-                if (direct[i] != 0) {
-                    newFreeBlks.add(direct[i]);
-                }
-                j += 2;
-            }
-
-            newFreeBlks.add(this.location);
-            sb.putFreeBlock(newFreeBlks);
-        }
-
-        if (this.magic >= 0) {
-            this.status = 0;
-            this.location = 0;
-            this.name = "000000";
-            this.type = 0;
-            this.openCount = 0;
-            this.numFiles = 0;
-
-            try {
-                writeToTable(iDelete.iNumber);
-                dt.traverseTree(tokens);
-            } catch (Exception e) {
-                System.out.println("Write to table error "
-                        + e);
-                magic = -1;
-            }
-        }
-    }
-
-    public INode(int iNumbers, String[] tokens, int exist) {
-        byte[] iBuffer = new byte[BLKSIZE];
-        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
-                + INODETBLSTART);
-        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
-        try {
-            sb.disk.getBlock(iTableBlk, iBuffer);
-            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
-                    + (iBuffer[offset + 2] & 0x00ff));
-            iBuffer = new byte[BLKSIZE];
-            this.magic = 0;
-            sb.disk.getBlock(block, iBuffer);
-        } catch (Exception e) {
-            this.magic = -1;
-        }
-        this.status = iBuffer[0];
-        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
-                + (iBuffer[2] & 0x00ff));
-        this.name = new String(iBuffer, 3, 6);
-        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
-                + (iBuffer[10] & 0x00ff));
-        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
-                + (iBuffer[12] & 0x00ff));
-        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
-                + (iBuffer[14] & 0x00ff));
-        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
-                + (iBuffer[16] & 0x00ff));
-        this.cdate = new String(iBuffer, 17, 28);
-        this.adate = new String(iBuffer, 45, 28);
-        this.mdate = new String(iBuffer, 73, 28);
-        int j = 0;
-        for (int i = 0; i < 12; i++) {
-            this.direct = new short[NUMDIRECT];
-            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
-                    + (iBuffer[101 + j + 1] & 0x00ff));
-            j += 2;
-        }
-        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
-                + (iBuffer[126] & 0x00ff));
 
 
-    }
+
+
+
 
     public int delete() {
+        dt.getParent(tokens);
 
-        INode parent = new INode(this.name);
 
         this.status = 0;
         this.location = 0;
@@ -692,4 +597,116 @@ public class INode implements JfsInternalConstants {
         return 0;
     }
 
+
+    public INode(JfsDirectoryEntry iDelete, String[] tokens, int exists) {
+
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            this.magic = 0;
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = iBuffer[offset];
+        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                + (iBuffer[offset + 2] & 0x00ff));
+        this.name = new String(iBuffer, offset + 3, 6);
+        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
+                + (iBuffer[offset + 10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
+                + (iBuffer[offset + 12] & 0x00ff));
+        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
+                + (iBuffer[offset + 14] & 0x00ff));
+
+
+        if (this.type == 1 && this.numFiles == 0) {
+            this.magic = -1;
+        }
+
+        if (this.magic >= 0) {
+            iBuffer = new byte[BLKSIZE];
+            sb.disk.getBlock(location, iBuffer);
+            ArrayList<Short> newFreeBlks = new ArrayList<Short>();
+            int j = 0;
+            for (int i = 0; i < 12; i++) {
+                this.direct = new short[NUMDIRECT];
+                this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                        + (iBuffer[101 + j + 1] & 0x00ff));
+                if (direct[i] != 0) {
+                    newFreeBlks.add(direct[i]);
+                }
+                j += 2;
+            }
+
+            newFreeBlks.add(this.location);
+            sb.putFreeBlock(newFreeBlks);
+        }
+
+        if (this.magic >= 0) {
+            this.status = 0;
+            this.location = 0;
+            this.name = "000000";
+            this.type = 0;
+            this.openCount = 0;
+            this.numFiles = 0;
+
+            try {
+                writeToTable(iDelete.iNumber);
+                dt.traverseTree(tokens);
+            } catch (Exception e) {
+                System.out.println("Write to table error "
+                        + e);
+                magic = -1;
+            }
+        }
+    }
+
+    public INode(int iNumbers, String[] tokens, int exist) {
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                    + (iBuffer[offset + 2] & 0x00ff));
+            iBuffer = new byte[BLKSIZE];
+            this.magic = 0;
+            sb.disk.getBlock(block, iBuffer);
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = iBuffer[0];
+        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
+                + (iBuffer[2] & 0x00ff));
+        this.name = new String(iBuffer, 3, 6);
+        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
+                + (iBuffer[10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
+                + (iBuffer[12] & 0x00ff));
+        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
+                + (iBuffer[14] & 0x00ff));
+        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
+                + (iBuffer[16] & 0x00ff));
+        this.cdate = new String(iBuffer, 17, 28);
+        this.adate = new String(iBuffer, 45, 28);
+        this.mdate = new String(iBuffer, 73, 28);
+        int j = 0;
+        for (int i = 0; i < 12; i++) {
+            this.direct = new short[NUMDIRECT];
+            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                    + (iBuffer[101 + j + 1] & 0x00ff));
+            j += 2;
+        }
+        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
+                + (iBuffer[126] & 0x00ff));
+
+
+    }
+
+
 }
+

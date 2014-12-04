@@ -32,8 +32,12 @@ public class JfsDirectoryTree {
         return 0;
     }
 
-    public int checkifExists(String[] tokens) {
-        return 0;
+    public JfsDirectoryEntry getParent(String[] tokens) {
+        return traverseTree(tokens);
+    }
+
+    public JfsDirectoryEntry getEntry(String[] tokens) {
+        return traverseTree(tokens).getChild(tokens[tokens.length - 1]);
     }
 
     public JfsDirectoryEntry traverseTree(String[] tokens) {

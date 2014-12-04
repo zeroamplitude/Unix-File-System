@@ -1,5 +1,7 @@
 package com.jfsmemory;
 
+import com.jfsinternal.INode;
+
 import java.util.HashMap;
 
 /**
@@ -10,13 +12,17 @@ public class JfsDirectoryEntry
 {
 
     public String name;
-    public short iNumber;
+    public INode iNode;
     public HashMap<String, JfsDirectoryEntry> child;
 
     public JfsDirectoryEntry(String name, short iNumber) {
         this.name = name;
-        this.iNumber = iNumber;
+        this.iNode = new INode(name);
         this.child = new HashMap<String, JfsDirectoryEntry>();
+    }
+
+    public JfsDirectoryEntry getChild(String name) {
+        return this.child.get(name);
     }
 
     public void addChild(JfsDirectoryEntry newChild) {
