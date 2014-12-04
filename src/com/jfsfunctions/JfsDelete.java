@@ -25,8 +25,6 @@ import com.jfsmemory.JfsDirectoryTree;
 import com.jfsmemory.JfsMemory;
 import com.jfsmemory.SystemWideOpenFileTable;
 
-import static com.jfsinternal.JfsInternalConstants.FLAGS;
-
 /**
  * @author Nicholas De Souza
  */
@@ -52,7 +50,7 @@ public class JfsDelete extends JfsInterface {
 
         // Check if file exist in the directoryTree
         // while, geting the iNumber;
-        JfsDirectoryEntry iDelete = dt.traverseTree(tokens, FLAGS.CHECK);
+        JfsDirectoryEntry iDelete = dt.traverseTree(tokens);
         if (iDelete.name.equals("ERROR")) {
             return -1;
         }

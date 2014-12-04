@@ -57,31 +57,6 @@ public class INode implements JfsInternalConstants {
     private short direct[];
     private short indirect;
 
-    public INode(int iNumber) {
-
-        byte[] iBuffer = new byte[BLKSIZE];
-        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
-                + INODETBLSTART);
-        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
-        try {
-            sb.disk.getBlock(iTableBlk, iBuffer);
-            this.magic = 0;
-        } catch (Exception e) {
-            this.magic = -1;
-        }
-
-        this.status = iBuffer[offset];
-        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
-                + (iBuffer[offset + 2] & 0x00ff));
-        this.name = new String(iBuffer, offset + 3, 6);
-        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
-                + (iBuffer[offset + 10] & 0x00ff));
-        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
-                + (iBuffer[offset + 12] & 0x00ff));
-        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
-                + (iBuffer[offset + 14] & 0x00ff));
-    }
-
 
     public INode(String root) {
         this.status = (byte) 1;     // 1 byte
@@ -125,6 +100,111 @@ public class INode implements JfsInternalConstants {
 
     }
 
+
+    /**
+     * Creates an iNode in memory from disk.
+     *
+     * @param iNumber
+     */
+    public INode(int iNumber) {
+
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            this.magic = 0;
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+
+        this.status = iBuffer[offset];
+        this.location = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                + (iBuffer[offset + 2] & 0x00ff));
+        this.name = new String(iBuffer, offset + 3, 6);
+        this.type = (short) (((iBuffer[offset + 9] & 0x00ff) << 8)
+                + (iBuffer[offset + 10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[offset + 11] & 0x00ff) << 8)
+                + (iBuffer[offset + 12] & 0x00ff));
+        this.numFiles = (short) (((iBuffer[offset + 13] & 0x00ff) << 8)
+                + (iBuffer[offset + 14] & 0x00ff));
+    }
+
+    /**
+     * INode Constructor
+     * This will construct and INode by reading it
+     * from disk.
+     *
+     * @param iNumber An integer representing the value of
+     *                the iNodes location in the iNode table
+     */
+    public INode(short iNumber) {
+
+        byte[] iBuffer = new byte[BLKSIZE];
+
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
+
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+
+        try {
+
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            this.magic = 0;
+
+            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                    + (iBuffer[offset + 2] & 0x00ff));
+
+            iBuffer = new byte[BLKSIZE];
+
+            sb.disk.getBlock(block, iBuffer);
+
+        } catch (Exception e) {
+
+            this.magic = -1;
+
+        }
+
+
+        this.status = iBuffer[0];
+
+        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
+                + (iBuffer[2] & 0x00ff));
+
+        this.name = new String(iBuffer, 3, 6);
+
+        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
+                + (iBuffer[10] & 0x00ff));
+
+        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
+                + (iBuffer[12] & 0x00ff));
+
+        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
+                + (iBuffer[14] & 0x00ff));
+
+        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
+                + (iBuffer[16] & 0x00ff));
+
+        this.cdate = new String(iBuffer, 17, 28);
+
+        this.adate = new String(iBuffer, 45, 28);
+
+        this.mdate = new String(iBuffer, 73, 28);
+
+        int j = 0;
+        for (int i = 0; i < 12; i++) {
+            this.direct = new short[NUMDIRECT];
+            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                    + (iBuffer[101 + j + 1] & 0x00ff));
+            j += 2;
+        }
+
+        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
+                + (iBuffer[126] & 0x00ff));
+
+
+    }
+
     /**
      * INode Constructor
      * This is the first constructor of an iNode when
@@ -140,7 +220,7 @@ public class INode implements JfsInternalConstants {
     public INode(String[] name, int type) {
 
         dt = memory.getJfsDirectoryTree();
-        magic3 = dt.traverseTree(name, FLAGS.CHECK);
+        magic3 = dt.traverseTree(name);
         if (!magic3.name.equals("ERROR")) {
             this.status = (byte) 1;     // 1 byte
 
@@ -230,123 +310,6 @@ public class INode implements JfsInternalConstants {
 
     }
 
-    /**
-     * INode Constructor
-     * This will construct and INode by reading it
-     * from disk.
-     *
-     * @param iNumber An integer representing the value of
-     *                the iNodes location in the iNode table
-     */
-    public INode(short iNumber) {
-
-        byte[] iBuffer = new byte[BLKSIZE];
-
-        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE)) + INODETBLSTART);
-
-        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
-
-        try {
-
-            sb.disk.getBlock(iTableBlk, iBuffer);
-            this.magic = 0;
-
-            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
-                    + (iBuffer[offset + 2] & 0x00ff));
-
-            iBuffer = new byte[BLKSIZE];
-
-            sb.disk.getBlock(block, iBuffer);
-
-        } catch (Exception e) {
-
-            this.magic = -1;
-
-        }
-
-
-        this.status = iBuffer[0];
-
-        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
-                + (iBuffer[2] & 0x00ff));
-
-        this.name = new String(iBuffer, 3, 6);
-
-        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
-                + (iBuffer[10] & 0x00ff));
-
-        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
-                + (iBuffer[12] & 0x00ff));
-
-        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
-                + (iBuffer[14] & 0x00ff));
-
-        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
-                + (iBuffer[16] & 0x00ff));
-
-        this.cdate = new String(iBuffer, 17, 28);
-
-        this.adate = new String(iBuffer, 45, 28);
-
-        this.mdate = new String(iBuffer, 73, 28);
-
-        int j = 0;
-        for (int i = 0; i < 12; i++) {
-            this.direct = new short[NUMDIRECT];
-            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
-                    + (iBuffer[101 + j + 1] & 0x00ff));
-            j += 2;
-        }
-
-        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
-                + (iBuffer[126] & 0x00ff));
-
-
-    }
-
-    public INode(int iNumbers, String[] tokens, int exist) {
-        byte[] iBuffer = new byte[BLKSIZE];
-        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
-                + INODETBLSTART);
-        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
-        try {
-            sb.disk.getBlock(iTableBlk, iBuffer);
-            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
-                    + (iBuffer[offset + 2] & 0x00ff));
-            iBuffer = new byte[BLKSIZE];
-            this.magic = 0;
-            sb.disk.getBlock(block, iBuffer);
-        } catch (Exception e) {
-            this.magic = -1;
-        }
-        this.status = iBuffer[0];
-        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
-                + (iBuffer[2] & 0x00ff));
-        this.name = new String(iBuffer, 3, 6);
-        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
-                + (iBuffer[10] & 0x00ff));
-        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
-                + (iBuffer[12] & 0x00ff));
-        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
-                + (iBuffer[14] & 0x00ff));
-        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
-                + (iBuffer[16] & 0x00ff));
-        this.cdate = new String(iBuffer, 17, 28);
-        this.adate = new String(iBuffer, 45, 28);
-        this.mdate = new String(iBuffer, 73, 28);
-        int j = 0;
-        for (int i = 0; i < 12; i++) {
-            this.direct = new short[NUMDIRECT];
-            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
-                    + (iBuffer[101 + j + 1] & 0x00ff));
-            j += 2;
-        }
-        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
-                + (iBuffer[126] & 0x00ff));
-
-
-    }
-
     public INode(JfsDirectoryEntry iDelete, String[] tokens, int exists) {
 
         byte[] iBuffer = new byte[BLKSIZE];
@@ -404,7 +367,7 @@ public class INode implements JfsInternalConstants {
 
             try {
                 writeToTable(iDelete.iNumber);
-                dt.traverseTree(tokens, FLAGS.REMOVE);
+                dt.traverseTree(tokens);
             } catch (Exception e) {
                 System.out.println("Write to table error "
                         + e);
@@ -412,6 +375,65 @@ public class INode implements JfsInternalConstants {
             }
         }
     }
+
+    public INode(int iNumbers, String[] tokens, int exist) {
+        byte[] iBuffer = new byte[BLKSIZE];
+        short iTableBlk = (short) (floor(iNumber / (INODETBLBLKSIZE))
+                + INODETBLSTART);
+        short offset = (short) (iNumber % (BLKSIZE / SHORTSIZE));
+        try {
+            sb.disk.getBlock(iTableBlk, iBuffer);
+            short block = (short) (((iBuffer[offset + 1] & 0x00ff) << 8)
+                    + (iBuffer[offset + 2] & 0x00ff));
+            iBuffer = new byte[BLKSIZE];
+            this.magic = 0;
+            sb.disk.getBlock(block, iBuffer);
+        } catch (Exception e) {
+            this.magic = -1;
+        }
+        this.status = iBuffer[0];
+        this.location = (short) (((iBuffer[1] & 0x00ff) << 8)
+                + (iBuffer[2] & 0x00ff));
+        this.name = new String(iBuffer, 3, 6);
+        this.type = (short) (((iBuffer[9] & 0x00ff) << 8)
+                + (iBuffer[10] & 0x00ff));
+        this.openCount = (short) (((iBuffer[11] & 0x00ff) << 8)
+                + (iBuffer[12] & 0x00ff));
+        this.iNumber = (short) (((iBuffer[13] & 0x00ff) << 8)
+                + (iBuffer[14] & 0x00ff));
+        this.size = (short) (((iBuffer[15] & 0x00ff) << 8)
+                + (iBuffer[16] & 0x00ff));
+        this.cdate = new String(iBuffer, 17, 28);
+        this.adate = new String(iBuffer, 45, 28);
+        this.mdate = new String(iBuffer, 73, 28);
+        int j = 0;
+        for (int i = 0; i < 12; i++) {
+            this.direct = new short[NUMDIRECT];
+            this.direct[i] = (short) (((iBuffer[101 + j] & 0x00ff) << 8)
+                    + (iBuffer[101 + j + 1] & 0x00ff));
+            j += 2;
+        }
+        this.indirect = (short) (((iBuffer[125] & 0x00ff) << 8)
+                + (iBuffer[126] & 0x00ff));
+
+
+    }
+
+    public int delete() {
+
+        dt.
+
+                INode parent = new INode()
+
+        this.status = 0;
+        this.location = 0;
+        this.name = "000000";
+        this.type = 0;
+        this.openCount = 0;
+        this.numFiles = 0;
+
+    }
+
 
     public int getMagic() {
         return this.magic;

@@ -1,12 +1,8 @@
 package com.jfsmemory;
 
-import static com.jfsinternal.JfsInternalConstants.FLAGS;
-
 /**
  * Created by Nicholas De Souza on 29/11/14.
  */
-
-
 public class JfsDirectoryTree {
 
     JfsDirectoryEntry root;
@@ -25,35 +21,30 @@ public class JfsDirectoryTree {
 
         JfsDirectoryEntry newEntry = new JfsDirectoryEntry(name, iNumber);
 
-        traverseTree(tokens, FLAGS.ADD).addChild(newEntry);
+        traverseTree(tokens).addChild(newEntry);
         System.out.println("Directory Added");
 
         return 0;
     }
 
-    public JfsDirectoryEntry traverseTree(String[] tokens, FLAGS flag) {
+    public int removeEntry(String[] tokens) {
+        traverseTree(tokens).deleteChild(tokens[tokens.length - 1]);
+        return 0;
+    }
 
+    public int checkifExists(String[] tokens) {
+
+    }
+
+    public JfsDirectoryEntry traverseTree(String[] tokens) {
         if (tokens[0].equals("") && tokens.length == 2) {
-
             return this.root;
-
         } else {
-            JfsDirectoryEntry current;
-            if (flag == FLAGS.ADD) {
-                current = root.search(tokens, 1, FLAGS.ADD);
-            } else if (flag == FLAGS.REMOVE) {
-                current = root.search(tokens, 1, FLAGS.REMOVE);
-            } else {
-                current = root.search(tokens, 1, FLAGS.CHECK);
-            }
-
+            JfsDirectoryEntry current = root.search(tokens, 1);
             if (current.name.equals("ERROR")) {
                 System.out.println("Error");
             }
-
             return current;
-
         }
-
     }
 }

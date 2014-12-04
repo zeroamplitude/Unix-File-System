@@ -2,8 +2,6 @@ package com.jfsmemory;
 
 import java.util.HashMap;
 
-import static com.jfsinternal.JfsInternalConstants.FLAGS;
-
 /**
  * Created by Nicholas De Souza on 29/11/14.
  */
@@ -28,13 +26,10 @@ public class JfsDirectoryEntry
     }
 
     public void deleteChild(String name) {
-
         this.child.remove(name);
-
     }
 
-
-    public JfsDirectoryEntry search(String[] tokens, int cur, FLAGS flag) {
+    public JfsDirectoryEntry search(String[] tokens, int cur) {
 
         JfsDirectoryEntry error = new JfsDirectoryEntry("ERROR", (short) 0);
 
@@ -42,19 +37,7 @@ public class JfsDirectoryEntry
 
             if ((child.get(tokens[cur]).child.containsKey(tokens[cur + 1]))) {
 
-                if (flag == FLAGS.CHECK) {
-
-                    return child.get(tokens[cur]).child.get(tokens[cur + 1]);
-
-                } else if (flag == FLAGS.REMOVE) {
-
-                    return child.get(tokens[cur]).child.remove(tokens[cur + 1]);
-
-                } else {
-
-                    return error;
-
-                }
+                return child.get(tokens[cur]).child.get(tokens[cur + 1]);
 
             } else {
 
@@ -65,19 +48,7 @@ public class JfsDirectoryEntry
         } else if (child.containsKey(tokens[cur])) {
 
             cur += 1;
-            if (flag == FLAGS.ADD) {
-
-                return child.get(tokens[cur - 1]).search(tokens, cur, FLAGS.ADD);
-
-            } else if (flag == FLAGS.REMOVE) {
-
-                return child.get(tokens[cur - 1]).search(tokens, cur, FLAGS.REMOVE);
-
-            } else {
-
-                return child.get(tokens[cur - 1]).search(tokens, cur, FLAGS.CHECK);
-
-            }
+            return child.get(tokens[cur - 1]).search(tokens, cur);
 
         } else {
 

@@ -20,7 +20,6 @@
 package com.jfsfunctions;
 
 import com.jfsinternal.INode;
-import com.jfsinternal.JfsInternalConstants.FLAGS;
 import com.jfsmemory.*;
 
 /**
@@ -49,7 +48,7 @@ public class JfsOpen extends JfsInterface {
         String[] tokens = pathname.split("/");
 
         // validate path
-        JfsDirectoryEntry iOpen = dt.traverseTree(tokens, FLAGS.CHECK);
+        JfsDirectoryEntry iOpen = dt.traverseTree(tokens);
         if (iOpen.name.equals("ERROR")) {
             return -1;
         }
